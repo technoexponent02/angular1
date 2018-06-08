@@ -1,0 +1,28 @@
+<div class="row">
+	<div class="col-md-12">
+		<div class="statusSection">
+			<form>
+				<div class="formRow">
+					<textarea class="textBox" placeholder="What are you thinking"></textarea>
+				</div>
+				<div class="statusButtonset">
+					<div class="row">
+						<div class="col-sm-12">
+							<div class="statusExtraBtns clearfix">
+								<a href="#" class="btns location"></a>
+								<a href="#" class="btns audio"></a>
+								<a href="#" class="btns video"></a>
+								<a href="#" class="btns camera"></a>
+								<label class="btns file">
+									<input type="file" class="attachFld"/>
+								</label>
+							</div>
+							<button class="btn btn-primary pull-right"><i class="fa fa-pencil"></i>&nbsp;&nbsp;Post</button>
+							<div class="clearfix"></div>
+						</div>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>

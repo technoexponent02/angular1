@@ -1,0 +1,573 @@
+<?php 
+namespace App\Http\Controllers\Api;
+
+use App\Models\SearchKeyword;
+use DB;
+use Auth;
+use Embed\Embed;
+use Readability\Readability;
+use GuzzleHttp\Client as GuzzleClient;
+
+use App\Models\Category;
+use App\Models\Tag;
+use App\Models\Privacy;
+
+use App\Http\Requests;
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+
+class ApiController extends Controller {
+
+	public function tag(Request $request)
+	{
+		$query = Tag::where('status', 'Y')->where('tag_name', '!=', '')
+					->orderBy('updated_at', 'desc');
+		if($request->has('q')) {
+			$q = $request->input('q');
+			$query->where('tag_name', 'like', '%' . $q . '%');
+		}
+		$tags = $query->limit(100)->lists('tag_name');
+		return response()->json($tags);
+	}
+
+	public function privacy()
+	{
+		$privacies = Privacy::get(['id', 'privacy_name']);
+		return response()->json($privacies);
+	}
+
+	public function userCollection()
+	{
+		$collections = Auth::user()->collection()
+									->where('status', 'Y')
+									->orderBy('collection_name', 'asc')
+									->get(['id', 'collection_name']);
+		return response()->json($collections);
+	}
+
+	/**
+	 * Extract external page information from user link..
+	 * 
+	 */
+	public function getExternalPageInfo(Request $request)
+	{
+		$response = [];
+		if (! $request->has('link')) {
+			$response = [
+				'error_message' => "Invalid request. Missing the 'link' parameter",
+				'status' => 'INVALID_REQUEST'
+			];
+			return response()->json($response, 400);
+		}
+		$link = formatSourceUrl($request->input('link'));
+		$domain = get_domain($link);
+		$domain = formatSourceUrl($domain);
+		$response['domain'] = $domain;
+		// Load external url:
+		
+		try {
+			$info = Embed::create($link);
+
+			$image = $info->image;
+			// Remove query string params..
+			if ($posOfQueryStr = strpos($image, '?')) {
+				$image = substr($image, 0, $posOfQueryStr);
+			}
+
+			$response = [
+				'title' => $info->title,
+				'type' => $info->type,
+				'image' => $image,
+				'code' => $info->code,
+				'providerName' => $info->providerName,
+				'providerUrl' => $info->providerUrl,
+				'domain' => $domain
+			];
+
+			$noArticle = ['photo', 'image', 'video'];
+
+			if ($request->has('article') && !in_array($info->type, $noArticle)) {
+				// guzzle configuration..
+				$options = [
+					'language' => 'en',
+					'image_min_bytes' => 4500,
+					'image_max_bytes' => 5242880,
+					'image_min_width' => 120,
+					'image_min_height' => 120,
+					'image_fetch_best' => true,
+					'image_fetch_all' => false,
+					/** @see http://guzzle.readthedocs.org/en/latest/clients.html#request-options */
+					'browser' => [
+							'timeout' => 60,
+							'connect_timeout' => 30,
+							'headers' => [
+									'User-Agent' => 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2272.118 Safari/537.36',
+									// 'Referer' => 'https://www.google.com/',
+									'Referer' => $domain,
+							],
+					]
+				];
+				// Get response using guzzle..
+				$guzzle = new GuzzleClient();
+				$guzzle_response = $guzzle->get($link, $options);
+				$html = $guzzle_response->getBody();
+				//$response['guzzle_html'] = $html;
+				$readability = new Readability($html, $link);
+				// or without Tidy
+				// $readability = new Readability($html, $link, 'libxml', false);
+				$result = $readability->init();
+
+				if ($result) {
+					$articleText = $readability->getContent()->innerHTML;
+					if (!empty($articleText)) {
+						$articleText = str_replace('&amp;', '&', $articleText);
+			            $articleText = htmlspecialchars_decode($articleText);
+			            
+			            $srcFound = false;
+						$pattern = '/< *img[^>]*src *= *["\']?([^"\']*)/';
+						$articleText = preg_replace_callback($pattern, function($matches) use($domain) {
+							$srcFound = true;
+							// dump(filter_var($matches[1], FILTER_VALIDATE_URL));
+							// dd($matches);
+							if (filter_var($matches[1], FILTER_VALIDATE_URL) === FALSE) {
+								$new_url = $domain . '/' . ltrim($matches[1], '/');
+								return str_replace($matches[1], $new_url, $matches[0]);
+							}
+							else {
+								return $matches[0];
+							}
+						}, $articleText);
+
+						// For data-src attribute.
+						if (!$srcFound) {
+							$pattern = '/< *img[^>]*data-src *= *["\']?([^"\']*)/';
+							$articleText = preg_replace_callback($pattern, function($matches) use($domain) {
+								// dump(filter_var($matches[1], FILTER_VALIDATE_URL));
+								// dd($matches);
+								$matches[0] = str_replace('data-src', 'src', $matches[0]);
+								if (filter_var($matches[1], FILTER_VALIDATE_URL) === FALSE) {
+									$new_url = $domain . '/' . ltrim($matches[1], '/');
+									return str_replace($matches[1], $new_url, $matches[0]);
+								}
+								else {
+									return $matches[0];
+								}
+							}, $articleText);
+						}
+
+						// Remove needsclick|<noscript>
+						$articleText = preg_replace(
+					        array(
+					        	'@needsclick@siu',
+					          	// Remove invisible content
+					            '@<script[^>]*?.*?</script>@siu',
+					            '@<object[^>]*?.*?</object>@siu',
+					            '@<embed[^>]*?.*?</embed>@siu',
+					            '@<applet[^>]*?.*?</applet>@siu',
+					            '@<noframes[^>]*?.*?</noframes>@siu',
+					            '@<noscript[^>]*?.*?</noscript>@siu',
+					            '@<noembed[^>]*?.*?</noembed>@siu'
+					        ),
+					        array(
+					            '', ' ', ' ', ' ', ' ', ' ', ' ', ' '
+					        ),
+				        $articleText );
+					}
+					
+					$response['description'] = $articleText;
+					// Prepare Live Preview limited description.
+					$limited_article = get_limited_article($articleText);
+	                $response['lp_desc'] = $limited_article['content'];
+	                $response['time_needed'] = $limited_article['time_needed'];
+					
+				}
+				else {
+					$response['description'] = '';
+				}
+			}
+			else {
+				$response['description'] = $info->description;
+			}
+		} catch(\Exception $e) {
+			// dd($e->getMessage());
+		    $response = [
+		    	'error' => 'INVALID_REQUEST',
+		    	'link' => $link,
+		    	'message' => $e->getMessage()
+		    ];
+		    return response()->json($response, 400);
+		}
+
+		return response()->json($response);
+	}
+
+	public function getDomainName(Request $request)
+	{
+		$response = [];
+		if (! $request->has('url')) {
+			$response = [
+				'error_message' => "Invalid request. Missing the 'url' parameter",
+				'status' => 'INVALID_REQUEST'
+			];
+			return response()->json($response, 400);
+		}
+
+		$url = $request->input('url');
+		$url = formatSourceUrl(get_domain(formatSourceUrl($url)));
+		$response['domain'] = $url;
+		return response()->json($response);
+	}
+
+	public function tagFollowUnfollow(Request $request)
+	{
+		$response = [
+			'status' => 0
+		];
+
+		$user_id = Auth::user()->id;
+		
+		if (! $request->has('name')) {
+			$response = [
+				'error_message' => "Invalid request. Missing the 'name' parameter",
+				'status' => 'INVALID_REQUEST'
+			];
+			return response()->json($response, 400);
+		}
+		$name = $request->input('name');
+		$name = strtolower($name);
+		// Get category case by searching insensitive category.
+		$category = Category::searchByName($name)->first(['id']);
+		// Get tag and post_id related to the tag.
+		$tag = Tag::where('tag_name', $name)->orWhere('tag_name', str_slug($name))->first(['id']);
+		if ($category !== null && $tag !== null) {
+			$category_follower = DB::table('category_follower')
+									->where('category_id', $category->id)
+									->where('follower_id', $user_id);
+			$category_follower_data = $category_follower->get(['id']);
+
+			$tag_user = DB::table('tag_user')
+									->where('tag_id', $tag->id)
+									->where('user_id', $user_id);
+			$tag_user_data = $tag_user->get(['id']);
+			// Exists one of table..so remove from both irrespected of existance.
+			if (!empty($category_follower_data) || !empty($tag_user_data)) {
+				// Remove category follower.
+				$category_follower->delete();
+				// Remove tag follower.
+				$tag_user->delete();
+			}
+			// Exists in none of the table.
+			else {
+				// Make category follower.
+				$category_follower_insert = [
+					'category_id' => $category->id,
+			    	'follower_id' => $user_id
+			    ];
+				DB::table('category_follower')->insert($category_follower_insert);
+				// Make tag follower.
+				$tag_user_insert = [
+					'tag_id' => $tag->id,
+			    	'user_id' => $user_id
+			    ];
+				DB::table('tag_user')->insert($tag_user_insert);
+				$response['status'] = 1;
+			}
+		}
+		// Tag is of type category.
+		elseif ($category !== null) {
+			$category_follower = DB::table('category_follower')
+									->where('category_id', $category->id)
+									->where('follower_id', $user_id);
+			$category_follower_data = $category_follower->get(['id']);
+			if (!empty($category_follower_data)) {
+				// Remove category follower.
+				$category_follower->delete();
+			}
+			else {
+				// Make category follower.
+				$category_follower_insert = [
+					'category_id' => $category->id,
+			    	'follower_id' => $user_id
+			    ];
+				DB::table('category_follower')->insert($category_follower_insert);
+				$response['status'] = 1;
+			}
+		}
+		// Tag is of type tags(actual).
+		elseif ($tag !== null) {
+			$tag_user = DB::table('tag_user')
+									->where('tag_id', $tag->id)
+									->where('user_id', $user_id);
+			$tag_user_data = $tag_user->get(['id']);
+			if (!empty($tag_user_data)) {
+				// Remove tag follower.
+				$tag_user->delete();
+			}
+			else {
+				// Make tag follower.
+				$tag_user_insert = [
+					'tag_id' => $tag->id,
+			    	'user_id' => $user_id
+			    ];
+				DB::table('tag_user')->insert($tag_user_insert);
+				$response['status'] = 1;
+			}
+		}
+		else {
+			/*$response = [
+				'error_message' => "Invalid request. The tag name $name does not exists.",
+				'status' => 'INVALID_REQUEST'
+			];
+			return response()->json($response, 400);*/
+			$name = str_slug($name);
+			$tag = new Tag(['tag_name' => $name]);
+            $tag->save();
+            // Make tag follower.
+			$tag_user_insert = [
+				'tag_id' => $tag->id,
+		    	'user_id' => $user_id
+		    ];
+			DB::table('tag_user')->insert($tag_user_insert);
+			$response['status'] = 1;
+		}
+		return response()->json($response);
+	}
+
+	public function allCatFollowUnfollow(Request $request)
+	{
+		$response = [
+			'status' => 0
+		];
+
+		$user_id = Auth::user()->id;
+		if (! $request->has('name')) {
+			$response = [
+				'error_message' => "Invalid request. Missing the 'name' parameter",
+				'status' => 'INVALID_REQUEST'
+			];
+			return response()->json($response, 400);
+		}
+		$name = $request->input('name');
+		$name = strtolower($name);
+		$oldFollowStatus = $request->input('followStatus');
+		// check if 'all'
+		if($name != 'all') {
+			$response = [
+				'error_message' => "Invalid request. Value of 'name' must be 'all'",
+				'status' => 'INVALID_REQUEST'
+			];
+			return response()->json($response, 400);
+		}
+		// Get only main catgeory.
+		$categories = Category::where('parent_id', 0)->get(['id']);
+		foreach ($categories as $category) {
+			$name = strtolower($category->category_name);
+			// Get tag and post_id related to the tag.
+			$tag = Tag::where('tag_name', $name)->orWhere('tag_name', str_slug($name))->first(['id']);
+			if ($category !== null && $tag !== null) {
+				$category_follower = DB::table('category_follower')
+										->where('category_id', $category->id)
+										->where('follower_id', $user_id);
+				$category_follower_data = $category_follower->get(['id']);
+
+				$tag_user = DB::table('tag_user')
+										->where('tag_id', $tag->id)
+										->where('user_id', $user_id);
+				$tag_user_data = $tag_user->get(['id']);
+				// Exists one of table..so remove from both irrespected of existance.
+				if ($oldFollowStatus == 1 && !empty($category_follower_data) || !empty($tag_user_data)) {
+					// Remove category follower.
+					$category_follower->delete();
+					// Remove tag follower.
+					$tag_user->delete();
+				}
+				// Exists in none of the table.
+				else {
+					// Make category follower.
+					$category_follower_insert = [
+						'category_id' => $category->id,
+				    	'follower_id' => $user_id
+				    ];
+					DB::table('category_follower')->insert($category_follower_insert);
+					// Make tag follower.
+					$tag_user_insert = [
+						'tag_id' => $tag->id,
+				    	'user_id' => $user_id
+				    ];
+					DB::table('tag_user')->insert($tag_user_insert);
+					$response['status'] = 1;
+				}
+			}
+			// Tag is of type category.
+			elseif ($category !== null) {
+				$category_follower = DB::table('category_follower')
+										->where('category_id', $category->id)
+										->where('follower_id', $user_id);
+				$category_follower_data = $category_follower->get(['id']);
+				if ($oldFollowStatus == 1 && !empty($category_follower_data)) {
+					// Remove category follower.
+					$category_follower->delete();
+				}
+				else {
+					// Make category follower.
+					$category_follower_insert = [
+						'category_id' => $category->id,
+				    	'follower_id' => $user_id
+				    ];
+					DB::table('category_follower')->insert($category_follower_insert);
+					$response['status'] = 1;
+				}
+			}
+			// Tag is of type tags(actual).
+			elseif ($tag !== null) {
+				$tag_user = DB::table('tag_user')
+										->where('tag_id', $tag->id)
+										->where('user_id', $user_id);
+				$tag_user_data = $tag_user->get(['id']);
+				if ($oldFollowStatus == 1 && !empty($tag_user_data)) {
+					// Remove tag follower.
+					$tag_user->delete();
+				}
+				else {
+					// Make tag follower.
+					$tag_user_insert = [
+						'tag_id' => $tag->id,
+				    	'user_id' => $user_id
+				    ];
+					DB::table('tag_user')->insert($tag_user_insert);
+					$response['status'] = 1;
+				}
+			}
+			else {
+				/*$response = [
+					'error_message' => "Invalid request. The tag name $name does not exists.",
+					'status' => 'INVALID_REQUEST'
+				];
+				return response()->json($response, 400);*/
+				$name = str_slug($name);
+				$tag = new Tag(['tag_name' => $name]);
+	            $tag->save();
+	            // Make tag follower.
+				$tag_user_insert = [
+					'tag_id' => $tag->id,
+			    	'user_id' => $user_id
+			    ];
+				DB::table('tag_user')->insert($tag_user_insert);
+				$response['status'] = 1;
+			}
+		}
+		return response()->json($response);
+	}
+
+	public function placeFollowUnfollow(Request $request)
+	{
+		$response = [
+			'status' => 0
+		];
+
+		$user_id = Auth::user()->id;
+		$input = $request->all();
+		// Throw error message if no params provided.
+		if (empty($input)) {
+			$response = [
+				'error_message' => "Invalid request. Atleast one parameter required.",
+				'status' => 'INVALID_REQUEST'
+			];
+			return response()->json($response, 400);
+		}
+		$place_follower = DB::table('place_follower')->where('user_id', $user_id);
+
+		// Check if place_url provided.
+		if (!empty($input['place_url'])) {
+			$place_url = $input['place_url'];
+
+	        $input = explode('&', rawurldecode($place_url));
+	        foreach ($input as $key => $value) {
+	            preg_match_all('/(.+)=(.*)/', $input[$key], $matches);
+	            if (!empty($matches[1][0]) && !empty($matches[2][0])) {
+	                $text = $matches[1][0];
+	                $place_follower_insert[$text] = $matches[2][0];
+	            }
+	        }
+			goto place_url_area;
+		}
+
+		// Allowed params.
+		$allowed_addr_comps = [
+			'location',
+			'city',
+			'state',
+			'country',
+			'region',
+			'continent'
+		];
+		foreach ($input as $param => $value) {
+			$param = strtolower($param);
+			if (in_array($param, $allowed_addr_comps)) {
+				$value = rawurldecode($value);
+				// $place_follower->where($param, 'LIKE', $value);
+				// new place follower insert array
+				$place_follower_insert[$param] = $value;
+			}
+		}
+		// Generate place_url.
+		$url = '';
+		if(
+            !empty($place_follower_insert['location']) &&
+            (empty($place_follower_insert['city']) || $place_follower_insert['location'] != $place_follower_insert['city']) &&                
+            (empty($place_follower_insert['city']) || $place_follower_insert['location'] != $place_follower_insert['state'])
+        ) {
+			$url = 'location=' . rawurlencode($place_follower_insert['location']) . '&';
+		}
+		if (!empty($place_follower_insert['city'])) {
+			$url .= 'city=' . rawurlencode($place_follower_insert['city']) . '&';
+		}
+		if (!empty($place_follower_insert['state'])) {
+			$url .= 'state=' . rawurlencode($place_follower_insert['state']) . '&';
+		}
+		if (!empty($place_follower_insert['country'])) {
+			$url .= 'country=' . rawurlencode($place_follower_insert['country']) . '&';
+		}
+		if (!empty($place_follower_insert['region'])) {
+			$url .= 'region=' . rawurlencode($place_follower_insert['region']) . '&';
+		}
+		if (!empty($place_follower_insert['continent'])) {
+			$url .= 'continent=' . rawurlencode($place_follower_insert['continent']) . '&';
+		}
+		$place_url = rtrim($url, '&');
+
+		place_url_area:
+
+		// Convert to lowercase.
+		$place_url = strtolower($place_url);
+		// Fetch place follower.
+		$place_follower_id = $place_follower->where('place_url', $place_url)->first(['id']);
+		if (!empty($place_follower_id)) {
+			// Remove place follower.
+			$place_follower->delete();
+		}
+		else {
+			$place_follower_insert['place_url'] = $place_url;
+			// Assign the user to insert array.
+			$place_follower_insert['user_id'] = $user_id;
+			// Make place follower.
+			DB::table('place_follower')->insert($place_follower_insert);
+			$response['status'] = 1;
+		}
+		return response()->json($response);
+	}
+
+    public function topSearchJson()
+    {
+        $hour = 24;
+        $search_keywords = SearchKeyword::select(DB::raw('id, COUNT(id) AS totalHits, keyword'))
+            ->sinceHoursAgo($hour)
+            ->groupBy('keyword')
+            ->orderByRaw('totalHits desc, created_at desc')
+            ->limit(10)
+            ->get(['keyword']);
+        return $search_keywords;
+
+    }
+
+}

@@ -1,0 +1,140 @@
+<div class="container-fluid padding-25 sm-padding-10" style="padding-top:0px !important;" >
+	<div class="panel newpanel m-t-10" style="margin-top:0px !important;">
+		<div class="scrollTabOuter" style="margin-top:-4px;">
+			<div class="scrollTab scrollTabCalc topFixed">
+				<div class="smallLoader_feature"></div>
+				<div class="nav nav-tabs nav-tabs-simple innerTab inlineView explorTabSlider feedPageFerBar" 
+					style="display:none;"
+					data-hide-selector=".smallLoader_feature"
+					data-hide-time="2000"
+					ng-attr-data-options="{{feedTabFlickityOptions | json}}">
+					<div class="itm"
+						flickity-item
+						ng-repeat="tab in feedTabs"
+						ng-class="{'active': (selTabVal == tab.name), 'borderItm': ($index==2)}">
+						<a ng-click="changeTab(tab)">
+							<div ng-if="tab.icon" class="txt">
+								<img ng-src="{{tab.icon}}" alt="{{tab.name}}"/>{{tab.name}}
+							</div>
+							<div ng-if="!tab.icon" class="txt no-img">
+								{{tab.name}}<span class="countR" ng-show="tab.newPostCount > 0">{{tab.newPostCount}}</span>
+							</div>
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>		
+		<div class="suggestedUsers" ng-if="selTabVal=='Following'" ng-hide="noDataFound" >
+			<span class="cls">
+				<img src="assets/pages/img/cross-black.png" alt=""/>
+			</span>
+			<div class="categoryHeadingRow">
+				<h5>Because you followed <strong>{{category}}</strong></h5>
+			</div>
+			<div class="allUserListCont">
+				<div class="suggestedUserLoader" ng-show="suggestloading"></div>
+				<div class="userList" id="demo_my_slider">
+					<div class="list" ng-repeat="user in recommendation">
+						<div class="recommendList" style="background:url('uploads/profile/cover/{{user.cover_image}}') no-repeat;">
+							<div class="usrProfileArea">
+								<div class="usrPostS">
+									{{user.totalPosts}} posts in {{category}}
+								</div>
+								<div class="usrProfileimg">
+									<div class="userStatusImage {{user.user_color}}" ng-if="!user.profile_image">
+										<a href="profile/{{user.username}}">
+											<span class="txt">{{ user.first_name.charAt(0) }}</span>
+										</a>
+									</div>
+									<div class="userStatusImage" ng-if="user.profile_image">
+										<a href="profile/{{user.username}}" style="background:url(uploads/profile/thumbs/{{user.profile_image}}) no-repeat;"></a>
+									</div>
+								</div>
+								<div class="usrProfileName">
+									<a href="profile/{{user.username}}">{{user.first_name+" "+user.last_name}}</a>
+								</div>
+								<div class="usrProfileAbt">
+									{{user.about_me | limitTo: limit}}
+								</div>
+								<div class="usrProfileLikePost">
+									<div class="liTm">
+										<span class="tL">Post</span>
+										<span class="tLCount">{{user.allPostCount}}</span>
+									</div>
+									<div class="liTm">
+										<span class="tL">Followers</span>
+										<span class="tLCount">{{user.totalFollowers}}</span>
+									</div>
+								</div>
+							</div>
+							<div class="usrProfileFollow">
+								<div class="floBtn">
+									<label class="followBtn" ng-click="followUser(user.created_by, 'followed');">
+										<span ng-if="userFollowing.indexOf(user.created_by)===-1">FOLLOW</span>
+										<span ng-if="userFollowing.indexOf(user.created_by)!==-1"  >FOLLOWING</span>
+										<!-- class="ico" -->
+									</label>
+								</div>
+							</div>
+						</div>
+
+						<!-- <div class="bX">
+							<div class="userStatusRow smUserStatus">
+								<div class="userStatusImage {{user.user_color}}" ng-if="!user.profile_image">
+									<a href="profile/{{user.username}}">
+										<span class="txt">{{ user.first_name.charAt(0) }}</span>
+									</a>
+								</div>
+								<div class="userStatusImage" ng-if="user.profile_image">
+									<a href="profile/{{user.username}}">
+										<img alt="profile image" ng-src="uploads/profile/thumbs/{{user.profile_image}}" height="32" width="32" />
+									</a>
+								</div>
+								<div class="userStatusInfo">
+									<span class="userStatusInfoTtl clearfix">
+										<a href="profile/{{user.username}}">{{user.first_name+" "+user.last_name}}</a>
+									</span>
+									<p class="userAbout" ng-init="limit = 40" ng-if="user.about_me && user.about_me.length >40">
+										{{user.about_me | limitTo: limit}}...
+									</p>
+									<p class="userAbout" ng-if="user.about_me && user.about_me.length <=39">
+										{{user.about_me}}
+									</p>
+									<span class="userAbout postTech">
+										{{user.totalPosts}} posts in {{category}}
+									</span>
+								</div>
+								<div class="floBtn">
+									<label class="followBtn" ng-click="followUser(user.created_by, 'followed');">
+										<span >FOLLOW</span>
+										<span class="ico">FOLLOWING</span>
+									</label>
+								</div>
+								<div class="clearfix"></div>
+							</div>
+						</div> -->
+					</div>
+				</div>
+			</div>
+		</div>
+		<div ng-hide="hidePostFilter">
+			<!-- post type nav desk -->
+			<post-type-nav navtype="desk"></post-type-nav>
+			<!-- post type nav mobile -->
+			<post-type-nav navtype="mob"></post-type-nav>
+        </div>
+
+		<div style="display:block; position:relative;" class="feedpage">
+			<div class="loaderImage"></div>
+			<!--  Tab container   -->
+            <div ng-include="currentTabUrl"></div>			
+		</div>
+	</div>
+</div>
+
+<!-- SHARE Modal -->
+<sharepost-card></sharepost-card>
+<!-- DELETE POST CARD MODAL -->
+<delete-post-modal></delete-post-modal>
+<!-- REPORT POST CARD MODAL -->
+<report-post-modal></report-post-modal>

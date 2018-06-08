@@ -1,0 +1,26 @@
+<div class="row postRow">
+    <div class="col-md-12 col-lg-12">
+        <div class="post_card_container">
+            <div class="blockContentRow inline"
+                    id="blckCntParent"
+                    infinite-scroll="fetchPostData()"
+                    <?php /*infinite-scroll-disabled="busy"*/?>
+                    infinite-scroll-distance="2"
+                    
+                    preserve-order
+                   
+                    ng-cloak>
+                    <div class="blockContent" ng-repeat="post in commonData.allPosts">
+                        <post-card></post-card>
+						<any ng-if="post.post_type==1 || post.post_type==5" 
+                    in-view="lineInView($index, $inview, $inviewInfo,post)"></any>
+                    </div>
+            </div>
+            <h2 class="noPostAvailable" ng-if="noPostForTag"> No {{ post_type }} post.</h2>
+            <h2 class="noPostAvailable" ng-if="!noPostForTag && noMorePost"> No more {{ post_type }} post.</h2>
+        </div>
+    </div>
+</div>
+<postcard-modal></postcard-modal> 
+<!-- REPORT COMMENT  MODAL -->
+<report-comment-modal></report-comment-modal>

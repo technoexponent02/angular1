@@ -1,0 +1,213 @@
+<style type="text/css">
+	/* body{background-color:#f6f9fa;} */
+	.header{background:#fff !important; box-shadow:none;}
+	.explorTabSlider .itm a.transformText, 
+	.searchFechrBar .itm a.transformText{text-transform:inherit;}
+	/* .feedPageFerBar .flickity-viewport{margin:0 30px; overflow:hidden;} */
+	@media (min-width: 992px){
+		.scrollTab .innerTab{padding:0 30px;}
+		.feedPageFerBar .flickity-prev-next-button.next,
+		.feedPageFerBar .flickity-prev-next-button.previous{background-color:#fff;}
+	}
+	@media (min-width: 768px){
+		.scrollTab.nav-up-now, 
+		.scrollTab{position:fixed; top:59px;}
+	}
+	@media (max-width: 767px){
+		.scrollTab.nav-up-now, 
+		.scrollTab{position:fixed; top:0;}
+		.scrollTab.topFixedN{
+			position: fixed;
+			-webkit-transform: translateY(60px);
+			transform: translateY(60px);
+			-webkit-transition: .6s;
+			transition: .6s;
+		}
+		.scrollTab.nav-up-now.topFixedN {
+			-webkit-transform: translateY(0);
+			transform: translateY(0);
+		}
+	}
+</style>
+<div class="container-fluid padding-25 sm-padding-10 feedPageCont" style="padding-top:0px !important;" >
+	<div class="panel newpanel m-t-10" style="margin-top:0px !important;">
+		<div class="scrollTabOuter" style="margin-top:-4px;">
+			<div class="scrollTab scrollTabCalc topFixedN topFixed">
+				<div class="smallLoader_featureCont">
+					<div class="smallLoader_feature"></div>
+				</div>
+				<div class="nav nav-tabs nav-tabs-simple innerTab inlineView explorTabSlider feedPageFerBar" 
+					style="display:none;"
+					data-hide-selector=".smallLoader_featureCont"
+					data-hide-time="2000"
+					ng-attr-data-options="{{feedTabFlickityOptions | json}}">
+					<div class="itm"
+						flickity-item
+						ng-repeat="tab in feedTabs"
+						ng-class="{'active': (selTabVal == tab.name), 'borderItm': ($index==2)}">
+						<a ng-click="changeTab(tab)" ng-class="{transformText:tab.showType == 'ft' } ">
+							<div ng-if="::tab.icon" class="txt">
+								<img ng-src="{{::tab.icon}}" alt="{{::tab.name}}"/>
+								<div class="nm">
+									<span class="thin">{{::tab.text}}</span>
+									<span class="strong">{{::tab.text}} </span>
+								</div>
+							</div>
+							<div ng-if="::(!tab.icon)" class="txt no-img">
+								<div class="nm">
+									<span class="thin">{{::tab.text}} </span>
+									<span class="strong">{{::tab.text}} </span>
+								</div>
+								<span class="countR" ng-show="tab.newPostCount > 0">{{tab.newPostCount}}</span>
+							</div>
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
+
+        <!-- Recommended users panel -->
+
+        <div ng-if="showRecommendedPanel" class="showRecommendedPanelC">
+            <div class="suggestedUsers" ng-if="selTabVal=='Following'" ng-hide="noDataFound" >
+			<span class="cls">
+				<img src="assets/pages/img/cross-black.png" alt=""/>
+			</span>
+                <div class="categoryHeadingRow">
+                    <h5>Because you followed <strong>{{category}}</strong></h5>
+                </div>
+                <div class="allUserListCont">
+                    <div class="suggestedUserLoader" ng-show="suggestloading"></div>
+                    <div class="userList" id="demo_my_slider">
+                        <div class="list" ng-repeat="user in recommendation">
+                            <div class="recommendList" style="background:url('{{user.cover_image}}') no-repeat;">
+                                <div class="usrProfileArea">
+                                    <div class="usrPostS">
+                                        {{user.totalPosts}} posts in {{category}}
+                                    </div>
+                                    <div class="usrProfileimg">
+                                        <div class="userStatusImage {{user.user_color}}" ng-if="(!user.profile_image)">
+                                            <a href="profile/{{user.username}}">
+                                                <span class="txt">{{user.first_name.charAt(0)}}</span>
+                                            </a>
+                                        </div>
+                                        <div class="userStatusImage" ng-if="user.profile_image">
+                                            <a href="profile/{{user.username}}" style="background:url({{user.profile_image}}) no-repeat;"></a>
+                                        </div>
+                                    </div>
+                                    <div class="usrProfileName">
+                                        <a href="profile/{{user.username}}">{{(user.first_name+" "+user.last_name)}}</a>
+                                    </div>
+                                    <div class="usrProfileAbt">
+                                        {{(user.about_me | limitTo: limit)}}
+                                    </div>
+                                    <div class="usrProfileLikePost">
+                                        <div class="liTm">
+                                            <span class="tL">Post</span>
+                                            <span class="tLCount">{{user.allPostCount}}</span>
+                                        </div>
+                                        <div class="liTm">
+                                            <span class="tL">Followers</span>
+                                            <span class="tLCount" ng-if="userFollowing.indexOf(user.created_by)===-1">{{user.totalFollowers}}</span>
+                                            <span class="tLCount" ng-if="userFollowing.indexOf(user.created_by)!==-1">{{user.totalFollowers + 1}}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="usrProfileFollow">
+                                    <div class="floBtn">
+                                        <label class="followBtn" ng-click="followUser(user.created_by, 'followed');">
+                                            <span ng-if="userFollowing.indexOf(user.created_by)===-1">FOLLOW</span>
+                                            <span class="ico" ng-if="userFollowing.indexOf(user.created_by)!==-1">FOLLOWING</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+		<!-- <div class="filterColm">
+			<a ng-click="instPin=true" class="filterColmArea">
+				<div class="sidebarUser">
+					<span class="thumbnail-wrapper d32 circular inline" ng-if="user.profile_image" style="background:url({{user.profile_image}}) no-repeat;"></span>
+					<span class="thumbnail-wrapper d32 circular inline {{user.user_color}}" ng-if="!user.profile_image">
+						<span class="txt">{{user.first_name.charAt(0)}}</span>
+					</span>
+					<span class="nm">Share your idea?</span>
+				</div>
+			</a>
+ 		</div>-->
+		<!--<div ng-hide="hidePostFilter">
+			<!-- post type nav desk -->
+			<!--<post-type-nav navtype="desk"></post-type-nav> -->
+			<!-- post type nav mobile -->
+			<!--<post-type-nav navtype="mob"></post-type-nav> -->
+        <!--</div> -->
+		<!-- Floating pin -->
+		<div class="instantPinContainer" ng-class="{show: instPin}" ng-click="instPin=false">
+			<div class="contArea">
+				<div class="cont">
+					<a ui-sref="post-add.status">
+						<img src="assets/pages/img/livejournal-fill.png" alt=""/>
+						<span class="tl">Status</span>
+					</a>
+					<a ui-sref="post-add.photo">
+						<img src="assets/pages/img/camera2-fill.png" alt=""/>
+						<span class="tl">Photo</span>
+					</a>
+					<a ui-sref="post-add.video">
+						<img src="assets/pages/img/camera1-fill.png" alt=""/>
+						<span class="tl">Video</span>
+					</a>
+					<a ui-sref="post-add.link">
+						<img src="assets/pages/img/link2-fill.png" alt=""/>
+						<span class="tl">Link</span>
+					</a>
+					<a ui-sref="post-add.article">
+						<img src="assets/pages/img/text-file-fill.png" alt=""/>
+						<span class="tl">Article</span>
+					</a>
+				</div>
+			</div>
+			<div class="contArea forMobile">
+				<div class="cont">
+					<a ui-sref="post-add.photo">
+						<img src="assets/pages/img/camera2-fill.png" alt=""/>
+						<span class="tl">Photo</span>
+					</a>
+					<a ui-sref="post-add.video">
+						<img src="assets/pages/img/camera1-fill.png" alt=""/>
+						<span class="tl">Video</span>
+					</a><br/>
+					<a ui-sref="post-add.link">
+						<img src="assets/pages/img/link2-fill.png" alt=""/>
+						<span class="tl">Link</span>
+					</a>
+					<a ui-sref="post-add.article">
+						<img src="assets/pages/img/text-file-fill.png" alt=""/>
+						<span class="tl">Article</span>
+					</a><br/>
+					<a ui-sref="post-add.status">
+						<img src="assets/pages/img/livejournal-fill.png" alt=""/>
+						<span class="tl">Status</span>
+					</a>
+				</div>
+			</div>
+		</div>
+
+		<div style="display:block; position:relative;" class="feedpage">
+			<div class="loaderImage"></div>
+			<!--  Tab container   -->
+            <div ng-include="currentTabUrl"></div>			
+		</div>
+	</div>
+</div>
+
+<!-- SHARE Modal -->
+<sharepost-card></sharepost-card>
+<!-- DELETE POST CARD MODAL -->
+<delete-post-modal></delete-post-modal>
+<!-- REPORT POST CARD MODAL -->
+<report-post-modal></report-post-modal>

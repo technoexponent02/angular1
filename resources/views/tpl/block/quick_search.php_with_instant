@@ -1,0 +1,430 @@
+<!-- START OVERLAY -->
+<div ng-controller="SearchCtrl" class="overlay searchFullcontainer" style="display:none;" pg-search webscrolling2>
+    <!-- BEGIN Overlay Content !-->
+    <div class="overlay-content has-results">
+        <!-- BEGIN Overlay Header !-->
+        <div class="container-fluid">
+            <!-- BEGIN Overlay Logo !-->
+			<div class="searchAreaLogo">
+				<img class="overlay-brand" src="assets/img/logo.png" alt="logo" data-src="assets/img/logo.png" ui-jq="unveil" data-src-retina="assets/img/logo_2x.png" height="22">
+			</div>
+            <!-- END Overlay Logo !-->
+            <!-- BEGIN Overlay Close !-->
+            <a href="" class="close-icon-light overlay-close text-black fs-16" id="searchCloseBtn" data-search="closeButton">
+                <!-- <i class="pg-close"></i> -->
+				<img src="assets/pages/img/cross-black.png" alt=""/>
+            </a>
+            <!-- END Overlay Close !-->
+        </div>
+        <!-- END Overlay Header !-->
+        <div class="container-fluid">
+            <!-- BEGIN Overlay Controls !-->
+            <input data-search="searchField" id="overlay-search" class="no-border overlay-search bg-transparent" placeholder="Search..(min 4 character)" autocomplete="off" spellcheck="false" ng-model="search.query" ng-change="liveSearch()" ng-model-options="{ updateOn: 'default blur', debounce: { default: 1000, blur: 0 } }">
+            <br/>
+			<div class="scrollTabOuter">
+				<div class="scrollTab scrollTabCalc">
+					<div class="nav nav-tabs nav-tabs-simple innerTab inlineView searchFechrBar"  
+						data-hide-time="2000"
+						data-hide-selector=".smallLoader_feature"
+						ng-attr-data-options="{{searchTabFlickityOptions | json}}">
+						<div class="itm"
+							flickity-item
+							ng-repeat="searchtab in searchNavItems"
+							ng-class="{'sel': searchtab.id == currentTab}">
+							<a href="" ng-click="changeTab($index);">
+								<div class="txt no-img">
+									{{searchtab.name}}
+								</div>
+							</a>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div style="display: block;position: relative;min-height: 300px;">
+				<div class="searchLoader" ng-show="showSearchLoader"></div>
+				<div class="searchMinChar" ng-show="search.query.length < 4">Please enter atleast 4 characters.</div>
+
+				<div class="searchTabarea" id="searchtab1" ng-show="currentTab=='post'">
+					<div class="post_card_container">
+						<div class="blockContentRow inline searchBlockcontent">
+							<div class="blockContent loaded" ng-repeat="post in searchResults.posts">
+								<search-post-card></search-post-card>
+								<any ng-if="post.post_type==1 || post.post_type==5" 
+		                    		in-view="lineInView($index, $inview, $inviewInfo,post)"></any>
+							</div>
+						</div>
+					</div>
+					<div class="showAllSearch" ng-show="searchResults && searchResults.totalPost > 10">
+						<a href="/search?q={{search.query}}">Show All</a>
+					</div>
+					<div class="noSearchResult" ng-show="showOrHideSearchTab('post')">
+						No post found.
+					</div>
+				</div>
+				<div class="searchTabarea" id="searchtab2" ng-show="currentTab=='channel'">
+					<div class="channelUsers  chanelTabDet">
+						<div class="list">
+							<a href="javascript:void(0);" class="userImg" style="background:url(https://swolk.com/uploads/profile/thumbs/14851590792o0jJsbzLC.560841.jpg) no-repeat;">
+								
+							</a>
+							<div class="area">
+								<div class="userNm">
+									<a href="javascript:void(0);">Sourav Dey</a>
+									
+								</div>
+								<span class="userUNm">Sourav<span class="srchfollowCountDiv"></span><span class="srchfollowCount">15 followers</span></span>
+								<span class="userBio">Web Developer</span>							
+								<label class="followBtn">
+									<span>FOLLOW</span>
+									<span class="ico">FOLLOWING</span>
+								</label>
+							</div>
+						</div>	
+						<div class="list">
+							<a href="javascript:void(0);" class="userImg" style="background:url(http://escuelatimy.com/wp-content/uploads/sites/4/2015/11/1442516277342.jpg) no-repeat;">
+								
+							</a>
+							<div class="area">
+								<div class="userNm">
+									<a href="javascript:void(0);">Dilip Patra</a>
+								</div>
+								<span class="userUNm">Dilip<span class="srchfollowCountDiv"></span><span class="srchfollowCount">15 followers</span></span>
+								<span class="userBio">Web Developer</span>						
+								<label class="followBtn">
+									<span>FOLLOW</span>
+									<span class="ico">FOLLOWING</span>
+								</label>
+							</div>
+						</div>
+						<div class="list">
+							<a href="javascript:void(0);" class="userImg" style="background:url(http://profiledps.com/images/dps/500/itm_cool-friendship-profile-pictures2013-01-31_00-48-07_1.jpg) no-repeat;">
+								
+							</a>
+							<div class="area">
+								<div class="userNm">
+									<a href="javascript:void(0);">Anurag Saha</a>
+								</div>
+								<span class="userUNm">Anurag<span class="srchfollowCountDiv"></span><span class="srchfollowCount">15 followers</span></span>
+								<span class="userBio">Web Developer</span>						
+								<label class="followBtn">
+									<span>FOLLOW</span>
+									<span class="ico">FOLLOWING</span>
+								</label>
+							</div>
+						</div>
+
+						<div class="list">
+							<a href="javascript:void(0);" class="userImg" style="background:url(http://3.bp.blogspot.com/-lRcAhXXhj4Y/TwsFl4Sq04I/AAAAAAAAAaE/QhCkTfzyGU8/s1600/SpoiledNSweet+Valentines+day+headband.jpg) no-repeat;">
+								
+							</a>
+							<div class="area">
+								<div class="userNm">
+									<a href="javascript:void(0);">Sourav Dey</a>
+								</div>
+								<span class="userUNm">Sourav<span class="srchfollowCountDiv"></span><span class="srchfollowCount">15 followers</span></span>
+								<span class="userBio">Web Developer</span>						
+								<label class="followBtn">
+									<span>FOLLOW</span>
+									<span class="ico">FOLLOWING</span>
+								</label>
+							</div>
+						</div>	
+						<div class="list">
+							<a href="javascript:void(0);" class="userImg" style="background:url(https://swolk.com/uploads/profile/thumbs/14851590792o0jJsbzLC.560841.jpg) no-repeat;">
+								
+							</a>
+							<div class="area">
+								<div class="userNm">
+									<a href="javascript:void(0);">Sourav Dey</a>
+								</div>
+								<span class="userUNm">Sourav<span class="srchfollowCountDiv"></span><span class="srchfollowCount">15 followers</span></span>
+								<span class="userBio">Web Developer</span>							
+								<label class="followBtn">
+									<span>FOLLOW</span>
+									<span class="ico">FOLLOWING</span>
+								</label>
+							</div>
+						</div>	
+						<div class="list">
+							<a href="javascript:void(0);" class="userImg" style="background:url(http://escuelatimy.com/wp-content/uploads/sites/4/2015/11/1442516277342.jpg) no-repeat;">
+								
+							</a>
+							<div class="area">
+								<div class="userNm">
+									<a href="javascript:void(0);">Dilip Patra</a>
+								</div>
+								<span class="userUNm">Dilip<span class="srchfollowCountDiv"></span><span class="srchfollowCount">15 followers</span></span>
+								<span class="userBio">Web Developer</span>						
+								<label class="followBtn">
+									<span>FOLLOW</span>
+									<span class="ico">FOLLOWING</span>
+								</label>
+							</div>
+						</div>
+						<div class="list">
+							<a href="javascript:void(0);" class="userImg" style="background:url(http://profiledps.com/images/dps/500/itm_cool-friendship-profile-pictures2013-01-31_00-48-07_1.jpg) no-repeat;">
+								
+							</a>
+							<div class="area">
+								<div class="userNm">
+									<a href="javascript:void(0);">Anurag Saha<span class="srchfollowCountDiv"></span><span class="srchfollowCount">15 followers</span></a>
+								</div>
+								<span class="userUNm">Anurag</span>
+								<span class="userBio">Web Developer</span>						
+								<label class="followBtn">
+									<span>FOLLOW</span>
+									<span class="ico">FOLLOWING</span>
+								</label>
+							</div>
+						</div>
+
+						<div class="list">
+							<a href="javascript:void(0);" class="userImg" style="background:url(http://3.bp.blogspot.com/-lRcAhXXhj4Y/TwsFl4Sq04I/AAAAAAAAAaE/QhCkTfzyGU8/s1600/SpoiledNSweet+Valentines+day+headband.jpg) no-repeat;">
+								
+							</a>
+							<div class="area">
+								<div class="userNm">
+									<a href="javascript:void(0);">Sourav Dey<span class="srchfollowCountDiv"></span><span class="srchfollowCount">15 followers</span></a>
+								</div>
+								<span class="userUNm">Sourav</span>
+								<span class="userBio">Web Developer</span>						
+								<label class="followBtn">
+									<span>FOLLOW</span>
+									<span class="ico">FOLLOWING</span>
+								</label>
+							</div>
+						</div>				
+					</div>
+					<div class="showAllSearch">
+						<a href="/search?q={{search.query}}">Show All</a>
+					</div>
+				</div>
+				<div class="searchTabarea" id="searchtab3" ng-show="currentTab=='tag'">
+					<div class="channelUsers srchtagList chanelTabDet">
+						<div class="list">
+							<a href="javascript:void(0);" class="userImg">
+								<span class="tagHas">#</span>
+							</a>
+							<div class="area">
+								<a href="javascript:void(0);" class="userNm">#TagTitleHere</a>
+								<span class="userUNm">62,824 Posts<span class="srchfollowCountDiv"></span><span class="srchfollowCount">15 followers</span></span>						
+								<label class="followBtn">
+									<span>FOLLOW</span>
+									<span class="ico">FOLLOWING</span>
+								</label>
+							</div>
+						</div>	
+						<div class="list">
+							<a href="javascript:void(0);" class="userImg">
+								<span class="tagHas">#</span>
+							</a>
+							<div class="area">
+								<a href="javascript:void(0);" class="userNm">#TagTitleHere</a>
+								<span class="userUNm">62,824 Posts<span class="srchfollowCountDiv"></span><span class="srchfollowCount">15 followers</span></span>						
+								<label class="followBtn">
+									<span>FOLLOW</span>
+									<span class="ico">FOLLOWING</span>
+								</label>
+							</div>
+						</div>	
+						<div class="list">
+							<a href="javascript:void(0);" class="userImg">
+								<span class="tagHas">#</span>
+							</a>
+							<div class="area">
+								<a href="javascript:void(0);" class="userNm">#TagTitleHere</a>
+								<span class="userUNm">62,824 Posts<span class="srchfollowCountDiv"></span><span class="srchfollowCount">15 followers</span></span>						
+								<label class="followBtn">
+									<span>FOLLOW</span>
+									<span class="ico">FOLLOWING</span>
+								</label>
+							</div>
+						</div>	
+						<div class="list">
+							<a href="javascript:void(0);" class="userImg">
+								<span class="tagHas">#</span>
+							</a>
+							<div class="area">
+								<a href="javascript:void(0);" class="userNm">#TagTitleHere</a>
+								<span class="userUNm">62,824 Posts<span class="srchfollowCountDiv"></span><span class="srchfollowCount">15 followers</span></span>						
+								<label class="followBtn">
+									<span>FOLLOW</span>
+									<span class="ico">FOLLOWING</span>
+								</label>
+							</div>
+						</div>	
+						<div class="list">
+							<a href="javascript:void(0);" class="userImg">
+								<span class="tagHas">#</span>
+							</a>
+							<div class="area">
+								<a href="javascript:void(0);" class="userNm">#TagTitleHere</a>
+								<span class="userUNm">62,824 Posts<span class="srchfollowCountDiv"></span><span class="srchfollowCount">15 followers</span></span>						
+								<label class="followBtn">
+									<span>FOLLOW</span>
+									<span class="ico">FOLLOWING</span>
+								</label>
+							</div>
+						</div>	
+						<div class="list">
+							<a href="javascript:void(0);" class="userImg">
+								<span class="tagHas">#</span>
+							</a>
+							<div class="area">
+								<a href="javascript:void(0);" class="userNm">#TagTitleHere</a>
+								<span class="userUNm">62,824 Posts<span class="srchfollowCountDiv"></span><span class="srchfollowCount">15 followers</span></span>						
+								<label class="followBtn">
+									<span>FOLLOW</span>
+									<span class="ico">FOLLOWING</span>
+								</label>
+							</div>
+						</div>	
+						<div class="list">
+							<a href="javascript:void(0);" class="userImg">
+								<span class="tagHas">#</span>
+							</a>
+							<div class="area">
+								<a href="javascript:void(0);" class="userNm">#TagTitleHere</a>
+								<span class="userUNm">62,824 Posts<span class="srchfollowCountDiv"></span><span class="srchfollowCount">15 followers</span></span>						
+								<label class="followBtn">
+									<span>FOLLOW</span>
+									<span class="ico">FOLLOWING</span>
+								</label>
+							</div>
+						</div>	
+						<div class="list">
+							<a href="javascript:void(0);" class="userImg">
+								<span class="tagHas">#</span>
+							</a>
+							<div class="area">
+								<a href="javascript:void(0);" class="userNm">#TagTitleHere</a>
+								<span class="userUNm">62,824 Posts<span class="srchfollowCountDiv"></span><span class="srchfollowCount">15 followers</span></span>						
+								<label class="followBtn">
+									<span>FOLLOW</span>
+									<span class="ico">FOLLOWING</span>
+								</label>
+							</div>
+						</div>					
+					</div>
+					<div class="showAllSearch">
+						<a href="/search?q={{search.query}}">Show All</a>
+					</div>
+				</div>
+				<div class="searchTabarea" id="searchtab4" ng-show="currentTab=='location'">
+					<div class="channelUsers srchtagList searchLocList">
+						<div class="list">
+							<a href="javascript:void(0);" class="userImg">
+								<span class="loc"><img src="assets/pages/img/search-location-icon.png" alt=""/></span>
+							</a>
+							<div class="area">
+								<a href="javascript:void(0);" class="userNm">PETRONAS Twin Towers</a>
+								<span class="userBio">Kulala Lumpur City Center, Kuala Lumpur</span>						
+								<label class="followBtn">
+									<span>FOLLOW</span>
+									<span class="ico">FOLLOWING</span>
+								</label>
+							</div>
+						</div>	
+						<div class="list">
+							<a href="javascript:void(0);" class="userImg">
+								<span class="loc"><img src="assets/pages/img/search-location-icon.png" alt=""/></span>
+							</a>
+							<div class="area">
+								<a href="javascript:void(0);" class="userNm">PETRONAS Twin Towers</a>
+								<span class="userBio">Kulala Lumpur City Center, Kuala Lumpur</span>						
+								<label class="followBtn">
+									<span>FOLLOW</span>
+									<span class="ico">FOLLOWING</span>
+								</label>
+							</div>
+						</div>	
+						<div class="list">
+							<a href="javascript:void(0);" class="userImg">
+								<span class="loc"><img src="assets/pages/img/search-location-icon.png" alt=""/></span>
+							</a>
+							<div class="area">
+								<a href="javascript:void(0);" class="userNm">PETRONAS Twin Towers</a>
+								<span class="userBio">Kulala Lumpur City Center, Kuala Lumpur</span>						
+								<label class="followBtn">
+									<span>FOLLOW</span>
+									<span class="ico">FOLLOWING</span>
+								</label>
+							</div>
+						</div>	
+						<div class="list">
+							<a href="javascript:void(0);" class="userImg">
+								<span class="loc"><img src="assets/pages/img/search-location-icon.png" alt=""/></span>
+							</a>
+							<div class="area">
+								<a href="javascript:void(0);" class="userNm">PETRONAS Twin Towers</a>
+								<span class="userBio">Kulala Lumpur City Center, Kuala Lumpur</span>						
+								<label class="followBtn">
+									<span>FOLLOW</span>
+									<span class="ico">FOLLOWING</span>
+								</label>
+							</div>
+						</div>	
+						<div class="list">
+							<a href="javascript:void(0);" class="userImg">
+								<span class="loc"><img src="assets/pages/img/search-location-icon.png" alt=""/></span>
+							</a>
+							<div class="area">
+								<a href="javascript:void(0);" class="userNm">PETRONAS Twin Towers</a>
+								<span class="userBio">Kulala Lumpur City Center, Kuala Lumpur</span>						
+								<label class="followBtn">
+									<span>FOLLOW</span>
+									<span class="ico">FOLLOWING</span>
+								</label>
+							</div>
+						</div>	
+						<div class="list">
+							<a href="javascript:void(0);" class="userImg">
+								<span class="loc"><img src="assets/pages/img/search-location-icon.png" alt=""/></span>
+							</a>
+							<div class="area">
+								<a href="javascript:void(0);" class="userNm">PETRONAS Twin Towers</a>
+								<span class="userBio">Kulala Lumpur City Center, Kuala Lumpur</span>							
+								<label class="followBtn">
+									<span>FOLLOW</span>
+									<span class="ico">FOLLOWING</span>
+								</label>
+							</div>
+						</div>	
+						<div class="list">
+							<a href="javascript:void(0);" class="userImg">
+								<span class="loc"><img src="assets/pages/img/search-location-icon.png" alt=""/></span>
+							</a>
+							<div class="area">
+								<a href="javascript:void(0);" class="userNm">PETRONAS Twin Towers</a>
+								<span class="userBio">Kulala Lumpur City Center, Kuala Lumpur</span>						
+								<label class="followBtn">
+									<span>FOLLOW</span>
+									<span class="ico">FOLLOWING</span>
+								</label>
+							</div>
+						</div>	
+						<div class="list">
+							<a href="javascript:void(0);" class="userImg">
+								<span class="loc"><img src="assets/pages/img/search-location-icon.png" alt=""/></span>
+							</a>
+							<div class="area">
+								<a href="javascript:void(0);" class="userNm">PETRONAS Twin Towers</a>
+								<span class="userBio">Kulala Lumpur City Center, Kuala Lumpur</span>				
+								<label class="followBtn">
+									<span>FOLLOW</span>
+									<span class="ico">FOLLOWING</span>
+								</label>
+							</div>
+						</div>					
+					</div>
+					<div class="showAllSearch">
+						<a href="/search?q={{search.query}}">Show All</a>
+					</div>
+				</div>
+			</div>
+            <!-- END Overlay Controls !-->
+        </div>
+    </div>
+    <!-- END Overlay Content !-->
+</div>
+<!-- END OVERLAY -->

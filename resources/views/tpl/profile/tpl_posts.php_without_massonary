@@ -1,0 +1,54 @@
+<div class="scrollTabOuter">
+	<div class="scrollTab scrollTabCalc">
+		<div class="smallLoader_feature"></div>
+		<div class="nav nav-tabs nav-tabs-simple innerTab inlineView explorTabSlider">					
+			<div class="itm" ng-class="{'active': (post_view_type == 'recent')}">
+				<a ng-click="changeTab('recent')" class="tb3" href="javascript:void(0)">
+					<div class="txt">
+						<img src="assets/pages/img/featured-recent-icon.png" alt=""/>Recent
+					</div>
+				</a>
+			</div>
+			<div class="itm" ng-class="{'active': (post_view_type == 'popular')}">
+				<a ng-click="changeTab('popular')" class="tb2" href="javascript:void(0)">
+					<div class="txt">
+						<img src="assets/pages/img/featured-popular-icon.png" alt=""/>Popular
+					</div>
+				</a>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- post type nav desk -->
+<post-type-nav navtype="desk"></post-type-nav>
+
+<!-- post type nav mobile -->
+<post-type-nav navtype="mob"></post-type-nav>
+<div class="row postRow">
+    <div class="loaderImage2 remove"></div>
+    <div class="col-md-12">
+        <div class="post_card_container">
+            <div class="blockContentRow inline"
+            		id="blckCntParent"
+            		infinite-scroll="loadMore(param)"
+            		infinite-scroll-disabled="busy"
+                    infinite-scroll-distance="2"
+                   
+                    ng-cloak
+                    >
+                <div class="blockContent " ng-repeat="post in commonData.allPosts">
+                    <post-card></post-card>
+					<!--
+					<any ng-if="post.post_type==1 || post.post_type==5"  
+						in-view="lineInView($index, $inview, $inviewInfo,post)">
+					</any>
+-->					
+                </div>                           
+            </div>
+             <h2 class="noPostAvailable" ng-if="is_showMorePost == 1">No {{ post_view_type }} post.</h2>
+             <h2 class="noPostAvailable" ng-if="is_showMorePost != 1 && is_show == 1">No more {{ post_view_type }} post</h2>
+        </div>
+    </div>
+    
+</div>

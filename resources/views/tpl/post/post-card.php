@@ -1,0 +1,881 @@
+<!-- <div class="profileCommentBox postCard postCardHide clkProfileCommentBox postLoading<?php /* {{cardClass(post)}}*/?>"
+     ng-mouseleave="videoPause(post,$index,'C');"
+     id="postCard{{$index}}"
+     custompostid="{{::post.id}}"
+     ng-class="::{'image_status_post na': post.post_type==1 || post.post_type==5}"
+> -->
+
+<!-- <div class="profileCommentBox postCard postCardHide clkProfileCommentBox postLoading<?php /* {{cardClass(post)}}*/?> post na"
+     ng-mouseleave="videoPause(post,$index,'C');"
+     id="postCard{{$index}}"
+     custompostid="{{::post.id}}"
+     
+> -->        <!-- Remove class postcard hide for solving original/All  post card view issue -->
+
+<div class="profileCommentBox postCard  clkProfileCommentBox postLoading<?php /* {{cardClass(post)}}*/?> post na"
+     ng-mouseleave="videoPause(post,$index,'C');"
+     id="postCard{{$index}}"
+     custompostid="{{::post.id}}"
+     
+>
+
+    <div class="cardBoxClk" data-toggle="modal" ng-click="showPostDetails(post.id,post.child_post_id,0,$index)"
+         data-target="#myModal{{::post.id}}"></div>
+	<!--- share post caption start -->
+	<div class="catagoryTagStatus" ng-if="::post.child_user">
+		<div class="reshareLine">
+			<div class="reshareLineTxt">
+			<a href="/profile/{{::post.post_owner.username}}" class="reshareUser"  >
+				<div class="img" ng-if="::post.post_owner.thumb_image_url"
+					style="background:url({{::post.post_owner.thumb_image_url}}) no-repeat;">
+				</div>
+				<div ng-if="::(!post.post_owner.thumb_image_url)"
+					class="img {{::post.post_owner.user_color}}"
+					 >
+					<span class="txt">{{::(post.post_owner.first_name.charAt(0))}}</span>
+				</div>
+				{{::post.post_owner.first_name}}
+			</a>
+
+			
+
+
+			&nbsp;<img src="/assets/pages/img/refresh4.png" alt="reshare">&nbsp;
+
+			<a href="/profile/{{::post.child_user.username}}" class="reshareUser" ng-if="::post.ask_anonymous!=1 ">
+				<div class="img" ng-if="::post.child_user.thumb_image_url"
+					style="background:url({{::post.child_user.thumb_image_url}}) no-repeat;"></div>
+				<div class="img {{::post.child_user.user_color}}"
+					 ng-if="::(!post.child_user.thumb_image_url)">
+					<span class="txt">{{::(post.child_user.first_name.charAt(0))}}</span>
+				</div>
+				{{::post.child_user.first_name}}'s post
+			</a>
+
+				<a href="" class="reshareUser" ng-if="::post.ask_anonymous==1 ">
+				
+					<div class="img {{::post.child_user.user_color}}"
+						>
+						<span class="txt">A</span>
+					</div>
+				    Anonymous's post
+				</a>
+
+
+			</div>
+			<span class="shareTime">
+				<small ng-if="::showElapsedTime(post.child_post_created_at)">
+					<time am-time-ago="post.child_post_created_at | amUtc | amLocal"></time>
+				</small>
+				<small ng-if="::(!showElapsedTime(post.child_post_created_at))"
+						data-toggle="tooltip" ui-jq="tooltip"
+					  data-original-title="{{::(post.child_post_created_at | amDateFormat:'DD MMM, YYYY - HH:mm')}}">
+					<time>{{ ::(post.child_post_created_at | amDateFormat:'DD MMM YYYY') }}</time>
+				</small>
+			</span>
+		</div>
+		<!-- <p class="card-caption" ng-if="::(post.child_postCaption!='undefined')">-->
+		<p class="card-caption" ng-if="::(post.child_postCaption!='')">
+			<span class="card-caption" ng-bind-html="::(post.child_postCaption | markupHTMLTags)"></span>
+		</p>
+	</div>
+	<!--- END share post caption -->
+	<div class="profileCommentBoxTopC">
+		<div class="profileCommentBoxTop">
+			<div class="post_type">            
+				<!-- image post -->
+				<div ng-if="::(post.post_type == 1)">
+					<div class="uploadImage imgbxc" style="position: relative;overflow: hidden;">
+						<a data-toggle="modal" ng-click="showPostDetails(post.id,post.child_post_id,0,$index)"
+						   data-target="#myModal{{::post.id}}">
+							<img class="cardFeatureImage"
+								 ng-style="::{'min-height' : post.feature_photo_detail.thumb_height + 'px'}"
+								 feature-image-onload
+								 ng-src="{{::post.feature_photo_detail.data_url}}">
+						</a>
+					</div>
+					<div class="answering">
+						<div ng-repeat="tag in ::post.tags" ng-if="post.created_at > tag.question_tag_created_at">
+							Answering to: <a href="/questions/{{::tag.tag_name}}" >{{ tag.question_tag }}</a>
+							<div class="tlflbtn">   
+								<label class="followBtn">
+									<span>FOLLOW</span>
+									<span class="ico" style="display:none;">FOLLOWING</span>
+								</label>
+							</div>
+						</div>
+						<!-- <span>What’s the best way to earn money online?</span>-->
+					</div>
+					<div class="catagoryTagRow {{::(post.post_type == 3 ? 'withTime' : '')}} {{ ::(!(post.category || post.sub_category) ? 'nocvategorysmallgap' : '') }}"
+					 ng-if="::(post.category || post.sub_category || post.post_type == 3 && post.time_needed!=0)">
+						<a ng-if="::post.category"
+						   href="{{ ::'/tag/' + post.category.category_name_url }}"
+						   class="catagoryTtlHighLight">{{::post.category.category_name}}</a>
+						<a ng-if="post.sub_category"
+						   href="{{::'/tag/' + post.sub_category.subcategory_name_url }}"
+						   class="catagoryTtlHighLight">{{::post.sub_category && post.sub_category.category_name}}</a>
+						<div class="postTime" ng-if="::post.post_type == 3 && post.time_needed!=0">
+							{{::post.time_needed}} min read
+						</div>
+					</div>
+					<div class="catagoryTtl" <?php /* ng-if="post.category || post.sub_category" */?>>					
+						<p>{{::post.title}}
+							<a ng-if="::(post.location && post.place_url && post.post_type != 5)" class="cardLoc"
+								href="/place?{{::post.place_url}}">
+								<img src="assets/pages/img/location1.png" alt="Location Info">
+								<span data-toggle="tooltip" ui-jq="tooltip" data-original-title="{{::post.location }}">{{::showLocation(post.location) }}</span>
+							</a>
+						</p>
+					</div>
+					<p class="postLink" ng-if="::(post.source && post.source!==null)">
+						<span>
+							<a href="{{::post.source}}" target="_blank">
+								{{::(post.source | domainFilter)}}
+							</a>
+						</span>
+					</p>
+					<div class="postShortDesc" ng-show="::post.short_description">
+						<p ng-show="::post.short_description">{{::post.short_description | limitShortDesc }}</p>
+					</div>
+				</div>
+				<!-- video post -->
+				<div ng-if="::(post.post_type==2)"
+					 ng-mouseover="videoPlay(post,$index,'C');">
+					<div class="uploadImage vdoB" ng-if="::post.embed_code">
+						<div class="uploadVidPreviewOuter">
+							<div class="uploadVidPreview">
+								<!-- YOUTUBE -->
+								<youtube ng-if="::(post.embed_code_type =='youtube')" videoid="{{::post.videoid}}" type="C"></youtube>
+								<!-- VIMEO -->
+								<div ng-if="::(post.embed_code_type =='vimeo')">
+									<vimeo-video
+											type="C"
+											id="vc-{{post.cardID}}"
+											vid="{{::post.videoid}}">
+									</vimeo-video>
+								</div>
+								<!-- DAILYMOTION -->
+								<div ng-if="::(post.embed_code_type =='dailymotion')"
+								 id="dc-{{post.cardID}}">
+									<daily-motion
+											type="C"
+											id="dmplayer{{$index}}"
+											vid="{{::post.videoid}}">
+									</daily-motion>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="uploadImage vdoB" ng-if="::post.video">
+						<div class="uploadVidPreviewOuter">
+							<div class="uploadLocVidPreview">
+							   <!-- MANUAL VIDEO -->
+								<manual-video url="{{::(post.video | trustUrl)}}"
+										postcardid="{{::post.id}}"
+										childpostid="{{::post.child_post_id}}"
+										type="C"
+										posttype="{{::post.post_type}}"
+										id="cardVideo-{{post.cardID}}"></manual-video>
+								<span class="customPlayPause"><span></span></span>
+								<div in-view="$inview&&myLoadingFunction($index,post)" class="onScreenDiv"
+									 style="display:block;position: relative;top: -1px;"></div>
+							</div>
+						</div>
+					</div>
+					<div class="answering">
+						<div ng-repeat="tag in ::post.tags" ng-if="post.created_at > tag.question_tag_created_at">
+							Answering to: <a href="/questions/{{::tag.tag_name}}" >{{ tag.question_tag }}</a>
+							<div class="tlflbtn">   
+								<label class="followBtn">
+									<span>FOLLOW</span>
+									<span class="ico" style="display:none;">FOLLOWING</span>
+								</label>
+							</div>
+						</div>
+					</div>
+					<div class="catagoryTagRow {{::(post.post_type == 3 ? 'withTime' : '')}} {{ ::(!(post.category || post.sub_category) ? 'nocvategorysmallgap' : '') }}"
+					 ng-if="::(post.category || post.sub_category || post.post_type == 3 && post.time_needed!=0)">
+						<a ng-if="::post.category"
+						   href="{{ ::'/tag/' + post.category.category_name_url }}"
+						   class="catagoryTtlHighLight">{{::post.category.category_name}}</a>
+						<a ng-if="post.sub_category"
+						   href="{{::'/tag/' + post.sub_category.subcategory_name_url }}"
+						   class="catagoryTtlHighLight">{{::post.sub_category && post.sub_category.category_name}}</a>
+						<div class="postTime" ng-if="::post.post_type == 3 && post.time_needed!=0">
+							{{::post.time_needed}} min read
+						</div>
+					</div>
+					<div class="catagoryTtl" <?php /* ng-if="post.category || post.sub_category" */?>>					
+						<p>{{::post.title}}
+							<a ng-if="::(post.location && post.place_url && post.post_type != 5)" class="cardLoc"
+								href="/place?{{::post.place_url}}">
+								<img src="assets/pages/img/location1.png" alt="Location Info">
+								<span data-toggle="tooltip" ui-jq="tooltip" data-original-title="{{::post.location }}">{{::showLocation(post.location) }}</span>
+							</a>
+						</p>
+					</div>
+					<p class="postLink" ng-if="::(post.source && post.source!='http://undefined')">
+						<span>
+							<a href="{{::(post.embed_code ? post.embed_code : post.source)}}" target="_blank">
+								{{::(post.source | domainFilter)}}
+							</a>
+						</span>
+					</p>
+					<div class="postShortDesc" ng-show="::post.short_description">
+						<p ng-show="::post.short_description">{{::post.short_description | limitShortDesc }}</p>
+					</div>
+				</div>
+				<!-- Article post -->
+				<div ng-if="::(post.post_type == 3)">
+					<div class="uploadImage imgbxc" ng-if="::post.image">
+						<a data-toggle="modal" ng-click="showPostDetails(post.id,post.child_post_id,0,$index)"
+						   data-target="#myModal{{::post.id}}">
+							<img class="cardFeatureImage"
+								 ng-style="::{'min-height' : post.feature_photo_detail.thumb_height + 'px'}"
+								 feature-image-onload
+								 ng-src="{{::post.feature_photo_detail.data_url}}">
+						</a>
+					</div>
+					<div class="answering">
+						<div ng-repeat="tag in ::post.tags" ng-if="post.created_at > tag.question_tag_created_at">
+							Answering to: <a href="/questions/{{::tag.tag_name}}" >{{ tag.question_tag }}</a>
+							<div class="tlflbtn">   
+								<label class="followBtn">
+									<span>FOLLOW</span>
+									<span class="ico" style="display:none;">FOLLOWING</span>
+								</label>
+							</div>
+						</div>
+					</div>
+					<div class="catagoryTagRow {{::(post.post_type == 3 ? 'withTime' : '')}} {{ ::(!(post.category || post.sub_category) ? 'nocvategorysmallgap' : '') }}"
+					 ng-if="::(post.category || post.sub_category || post.post_type == 3 && post.time_needed!=0)">
+						<a ng-if="::post.category"
+						   href="{{ ::'/tag/' + post.category.category_name_url }}"
+						   class="catagoryTtlHighLight">{{::post.category.category_name}}</a>
+						<a ng-if="post.sub_category"
+						   href="{{::'/tag/' + post.sub_category.subcategory_name_url }}"
+						   class="catagoryTtlHighLight">{{::post.sub_category && post.sub_category.category_name}}</a>
+						<div class="postTime" ng-if="::post.post_type == 3 && post.time_needed!=0">
+							{{::post.time_needed}} min read
+						</div>
+					</div>
+					<div class="catagoryTtl" <?php /* ng-if="post.category || post.sub_category" */?>>
+						<p>{{::post.title}}
+							<a ng-if="::(post.location && post.place_url && post.post_type != 5)" class="cardLoc"
+								href="/place?{{::post.place_url}}">
+								<img src="assets/pages/img/location1.png" alt="Location Info">
+								<span data-toggle="tooltip" ui-jq="tooltip" data-original-title="{{::post.location }}">{{::showLocation(post.location) }}</span>
+							</a>
+						</p>
+					</div>
+					<p class="postLink" ng-if="::(post.source && post.source!==null)">
+						<span>
+							<a href="{{::(post.external_link ? post.external_link : post.source)}}" target="_blank">
+								{{::(post.source | domainFilter)}}
+							</a>
+						</span>
+					</p>
+					<div class="postShortDesc" ng-bind-html="::(post.content | markupHTMLTags)"></div>
+
+				</div>
+				<!-- Link post -->
+				<div ng-if="::(post.post_type == 4)">
+					<!-- Linked video -->
+					<div class="uploadImage vdoB" ng-if="::post.embed_code">
+						<div class="uploadVidPreviewOuter">
+							<div class="uploadVidPreview">
+								<!-- YOUTUBE -->
+								<youtube ng-if="::(post.embed_code_type =='youtube')" videoid="{{::post.videoid}}" type="C"></youtube>
+								<!-- VIMEO -->
+								<div ng-if="::(post.embed_code_type =='vimeo')" >
+									<vimeo-video
+											type="C"
+											id="vc-{{post.cardID}}"
+											vid="{{::post.videoid}}">
+									</vimeo-video>
+								</div> 	
+
+								<!-- DAILYMOTION -->
+								<div ng-if="::(post.embed_code_type =='dailymotion')"
+								 id="dc-{{post.cardID}}">
+									<daily-motion
+											type="C"
+											id="dmplayer{{$index}}"
+											vid="{{::post.videoid}}">
+									</daily-motion>
+								</div>
+								<!-- OTHERS -->
+								<iframe ng-if="::(post.embed_code_type =='unsupported')" class="iframeTag"
+										src="{{::(post.embed_code | trustUrl)}} "
+										imageonload="removePostLoading('postCard'+$index)"
+										height="200"
+										webkitallowfullscreen mozallowfullscreen allowfullscreen ad_pause>
+								</iframe>
+							</div>
+						</div>
+					</div>
+					<!-- Linked image -->
+					<div class="uploadImage imgbxc" ng-if="::(!post.embed_code && post.image)">
+						<a data-toggle="modal"
+							ng-click="showPostDetails(post.id,post.child_post_id,0,$index)"
+							data-target="#myModal{{::post.id}}">
+							<img class="cardFeatureImage"
+								 ng-style="::{'min-height' : post.feature_photo_detail.thumb_height + 'px'}"
+								 feature-image-onload
+								 ng-src="{{::post.feature_photo_detail.data_url}}">
+						</a>
+					</div>
+					<div class="answering">
+						<div ng-repeat="tag in ::post.tags" ng-if="post.created_at > tag.question_tag_created_at">
+							Answering to: <a href="/questions/{{::tag.tag_name}}" >{{ tag.question_tag }}</a>
+							<div class="tlflbtn">   
+								<label class="followBtn">
+									<span>FOLLOW</span>
+									<span class="ico" style="display:none;">FOLLOWING</span>
+								</label>
+							</div>
+						</div>
+					</div>
+					<div class="catagoryTagRow {{::(post.post_type == 3 ? 'withTime' : '')}} {{ ::(!(post.category || post.sub_category) ? 'nocvategorysmallgap' : '') }}"
+					 ng-if="::(post.category || post.sub_category || post.post_type == 3 && post.time_needed!=0)">
+						<a ng-if="::post.category"
+						   href="{{ ::'/tag/' + post.category.category_name_url }}"
+						   class="catagoryTtlHighLight">{{::post.category.category_name}}</a>
+						<a ng-if="post.sub_category"
+						   href="{{::'/tag/' + post.sub_category.subcategory_name_url }}"
+						   class="catagoryTtlHighLight">{{::post.sub_category && post.sub_category.category_name}}</a>
+						<div class="postTime" ng-if="::post.post_type == 3 && post.time_needed!=0">
+							{{::post.time_needed}} min read
+						</div>
+					</div>
+					<div class="catagoryTtl" <?php /* ng-if="post.category || post.sub_category" */?>>
+						<p>{{::post.title}}
+							<a ng-if="::(post.location && post.place_url && post.post_type != 5)" class="cardLoc"
+								href="/place?{{::post.place_url}}">
+								<img src="assets/pages/img/location1.png" alt="Location Info">
+								<span data-toggle="tooltip" ui-jq="tooltip" data-original-title="{{::post.location }}">{{::showLocation(post.location) }}</span>
+							</a>
+						</p>
+					</div>
+					<div ng-if="::post.source" class="postLinkBtn">
+						<a href="{{::post.external_link}}" target="_blank"
+						   viewpost="externalLink(post.id,post.child_post_id);" class="btn btn-default btn-sm">
+							<i class="fa fa-external-link"></i>
+							{{::(post.source | domainFilter)}}
+						</a>
+					</div>
+					<div class="postShortDesc" ng-show="::post.short_description">
+						<p ng-show="::post.short_description">{{::post.short_description | limitShortDesc }}</p>
+					</div>
+				</div>
+				<!-- Status post -->
+				<div ng-if="::(post.post_type == 5)" ng-mouseover="videoPlay(post,$index,'C');" class="statusPostcard">
+					
+					<!-- Status video -->
+					<div class="uploadImage vdoB" ng-if="::post.embed_code">
+						<div class="uploadVidPreviewOuter">
+							<div class="uploadVidPreview">
+								<!-- YOUTUBE -->
+								<youtube ng-if="::(post.embed_code_type =='youtube')" videoid="{{::post.videoid}}" type="C"></youtube>
+								<!-- VIMEO -->
+								<div ng-if="post.embed_code_type =='vimeo'" >
+									<vimeo-video
+											type="C"
+											id="vc-{{post.cardID}}"
+											vid="{{::post.videoid}}">
+									</vimeo-video>
+								</div>
+								<!-- DAILYMOTION -->
+								<div ng-if="::(post.embed_code_type =='dailymotion')"
+								 id="dc-{{::post.cardID}}">
+									<daily-motion
+										type="C"
+										id="dmplayer{{::post.cardID}}"
+										vid="{{::post.videoid}}">
+									</daily-motion>
+								</div>
+								<!-- OTHERS -->
+								<iframe ng-if="::(post.embed_code_type =='unsupported')" class="iframeTag"
+										src="{{::(post.embed_code | trustUrl)}} "
+										imageonload="removePostLoading('postCard'+$index)"
+										height="200"
+										webkitallowfullscreen mozallowfullscreen allowfullscreen ad_pause>
+								</iframe>
+							</div>
+						</div>
+					</div>
+					<!-- Uploaded video -->
+					<div class="uploadImage" ng-if="::post.video">
+						<div class="uploadLocVidPreview">
+							<!-- MANUAL VIDEO -->
+							<manual-video url="{{::(post.video | trustUrl)}}"
+									postcardid="{{::post.id}}"
+									childpostid="{{::post.child_post_id}}"
+									type="C"
+									posttype="{{::post.post_type}}"
+									id="cardVideo-{{post.cardID}}">
+							</manual-video>
+							<span class="customPlayPause"><span></span></span>
+						</div>
+					</div>
+					<!-- Linked image -->
+					<div class="uploadImage imgbxc" ng-if="::(!post.embed_code && post.image)">
+						<a data-toggle="modal"
+							 ng-click="showPostDetails(post.id,post.child_post_id,0,$index)"
+							 data-target="#myModal{{::post.id}}">
+							<img class="cardFeatureImage"
+								 ng-style="::{'min-height' : post.feature_photo_detail.thumb_height + 'px'}"
+								 feature-image-onload
+								 ng-src="{{::post.feature_photo_detail.data_url}}">
+						</a>
+					</div>	
+					<div class="answering">						
+						<div ng-repeat="tag in ::post.tags" ng-if="post.created_at > tag.question_tag_created_at">
+							Answering to: <a href="/questions/{{::tag.tag_name}}" >{{ tag.question_tag }}</a>
+							<div class="tlflbtn">   
+								<label class="followBtn">
+									<span>FOLLOW</span>
+									<span class="ico" style="display:none;">FOLLOWING</span>
+								</label>
+							</div>
+						</div>
+					</div>
+					<p class="card-caption" ng-if="::post.caption">
+						<span class="card-caption stsCap" ng-bind-html="::post.caption | markupHTMLTags"></span>
+						<a ng-if="::(post.location && post.place_url && post.post_type == 5)" class="cardLoc"
+							href="/place?{{::post.place_url}}">
+							<img src="assets/pages/img/location1.png" alt="Location">
+							<span data-toggle="tooltip" ui-jq="tooltip" data-original-title="{{::post.location}}">{{ ::showLocation(post.location) }}</span>
+						</a>
+					</p>
+					<p class="postLink" ng-if="::(post.source && post.source!==null)">
+						<span>
+							<a href="{{::(post.embed_code ? post.embed_code : post.source)}}" target="_blank">
+								{{::(post.source | domainFilter)}}
+							</a>
+						</span>
+					</p>
+					<div class="profileNewCoverBottomLink" ng-if="::(post.tags.length>0 ) " ng-init="showStatus(post.tags);" >
+					<!--  allow tag for post type "status"-->
+						<ul>
+							<li ng-repeat="tag in ::post.tags" ng-if="tag.question_tag_created_at ? post.created_at < tag.question_tag_created_at :'true'">
+							
+								 <!-- <a href="/tag/{{::tag.tag_name}}" >#{{::tag.tag_name | tagreplace}}</a>  (21-03-18) bolck for tag text related changes --> 
+								 <a href="/tag/{{::tag.tag_name}}" >#{{::tag.tag_text }}</a> <!-- Add for tag text related changes  --> 
+								 <!-- <a href="/tag/{{::tag.tag_name}}">#{{::tag.tag_name}}</a> -->
+								
+							</li>
+						</ul>
+					</div>
+				</div>
+				
+				<!-- question post -->
+				<div ng-if="::(post.post_type == 6)">
+
+					<!-- Status video -->
+					<div class="uploadImage vdoB" ng-if="::post.embed_code">
+						<div class="uploadVidPreviewOuter">
+							<div class="uploadVidPreview">
+								<!-- YOUTUBE -->
+								<youtube ng-if="::(post.embed_code_type =='youtube')" videoid="{{::post.videoid}}" type="C"></youtube>
+								<!-- VIMEO -->
+								<div ng-if="post.embed_code_type =='vimeo'" >
+									<vimeo-video
+											type="C"
+											id="vc-{{post.cardID}}"
+											vid="{{::post.videoid}}">
+									</vimeo-video>
+								</div>
+								<!-- DAILYMOTION -->
+								<div ng-if="::(post.embed_code_type =='dailymotion')"
+								 id="dc-{{::post.cardID}}">
+									<daily-motion
+										type="C"
+										id="dmplayer{{::post.cardID}}"
+										vid="{{::post.videoid}}">
+									</daily-motion>
+								</div>
+								<!-- OTHERS -->
+								<iframe ng-if="::(post.embed_code_type =='unsupported')" class="iframeTag"
+										src="{{::(post.embed_code | trustUrl)}} "
+										imageonload="removePostLoading('postCard'+$index)"
+										height="200"
+										webkitallowfullscreen mozallowfullscreen allowfullscreen ad_pause>
+								</iframe>
+							</div>
+						</div>
+					</div>
+					<!-- Uploaded video -->
+					<div class="uploadImage" ng-if="::post.video">
+						<div class="uploadLocVidPreview">
+							<!-- MANUAL VIDEO -->
+							<manual-video url="{{::(post.video | trustUrl)}}"
+									postcardid="{{::post.id}}"
+									childpostid="{{::post.child_post_id}}"
+									type="C"
+									posttype="{{::post.post_type}}"
+									id="cardVideo-{{post.cardID}}">
+							</manual-video>
+							<span class="customPlayPause"><span></span></span>
+						</div>
+					</div>
+					<!-- Linked image -->
+					<div class="uploadImage imgbxc" style="position: relative;overflow: hidden;" >
+						<a data-toggle="modal" ng-click="showPostDetails(post.id,post.child_post_id,0,$index)"
+						   data-target="#myModal{{::post.id}}" ng-if="::(post.feature_photo_detail.data_url)">
+						   <!-- <p> {{::post.feature_photo_detail.data_url}}</p> -->
+							<img class="cardFeatureImage"
+								 ng-style="::{'min-height' : post.feature_photo_detail.thumb_height + 'px'}"
+								 feature-image-onload
+								 ng-src="{{::post.feature_photo_detail.data_url}}" ng-if="::(post.feature_photo_detail.data_url)" >
+						</a>
+					</div>
+					<!-- <div class="answering">
+						Answering to:
+						<span>How do I make more money?</span>
+					</div> -->
+					<!--<p class="card-caption">
+						
+						<a ng-if="::(post.location && post.place_url && post.post_type != 5)" class="cardLoc"
+							href="/place?{{::post.place_url}}">
+							<img src="assets/pages/img/location1.png" alt="Location Info">
+							<span data-toggle="tooltip" ui-jq="tooltip" data-original-title="{{::post.location }}">{{::showLocation(post.location) }}</span>
+						</a>
+					</p>-->
+					<div class="catagoryTagRow {{::(post.post_type == 3 ? 'withTime' : '')}} {{ ::(!(post.category || post.sub_category) ? 'nocvategorysmallgap' : '') }}"
+					 ng-if="::(post.category || post.sub_category || post.post_type == 3 && post.time_needed!=0)">
+						<a ng-if="::post.category"
+						   href="{{ ::'/tag/' + post.category.category_name_url }}"
+						   class="catagoryTtlHighLight">{{::post.category.category_name}}</a>
+						<a ng-if="post.sub_category"
+						   href="{{::'/tag/' + post.sub_category.subcategory_name_url }}"
+						   class="catagoryTtlHighLight">{{::post.sub_category && post.sub_category.category_name}}</a>
+						<div class="postTime" ng-if="::post.post_type == 3 && post.time_needed!=0">
+							{{::post.time_needed}} min read
+						</div>
+					</div>
+
+
+
+
+
+					<div class="catagoryTtl qtl">					
+						<p>
+							<span ng-bind-html="::post.caption | markupHTMLTags" style="position:relative; z-index:0;"></span>
+							<a ng-if="::(post.location && post.place_url && post.post_type != 5)" class="cardLoc"
+								href="/place?{{::post.place_url}}">
+								<img src="assets/pages/img/location1.png" alt="Location Info">
+								<span data-toggle="tooltip" ui-jq="tooltip" data-original-title="{{::post.location }}">{{::showLocation(post.location) }}</span>
+							</a>
+							<span ng-if="::(post.post_type=='6')" class="tlflbtn">    
+								<label class="followBtn">
+									<span>FOLLOW</span>
+									<span class="ico" style="display:none;">FOLLOWING</span>
+								</label>
+							</span>
+						</p>
+					</div>
+					<p class="postLink" ng-if="::(post.source && post.source!==null)">
+						<span>
+							<a href="{{::post.source}}" target="_blank">
+								{{::(post.source | domainFilter)}}
+							</a>
+						</span>
+					</p>
+					<div class="postShortDesc" ng-show="::post.short_description">
+						<p ng-show="::post.short_description">{{::post.short_description | limitShortDesc }}</p>
+					</div>
+				</div>		
+				
+				
+				
+				
+				
+				
+				<!-- tags -->            
+				<!-- <div class="profileNewCoverBottomLink" ng-if="::(post.tags.length>0 && post.post_type !== 5)"> comment for allow tag for post type "status" -->
+				<div class="profileNewCoverBottomLink" ng-if="::(post.tags.length>0 ) &&  post.post_type != 5  " ng-init="showStatus(post.tags);"> <!--  allow tag for post type "status"-->
+					<ul ng-if="::post.post_type=='6'">
+						<li ng-repeat="tag in ::post.tags">
+
+							 <!-- <a href="/tag/{{::tag.tag_name}}" ng-if=":: tag.question_tag!=post.caption">#{{::tag.tag_name | tagreplace}}</a> (21-03-18)tag text related changes-->
+
+							  <a href="/tag/{{::tag.tag_name}}" ng-if=":: tag.question_tag!=post.caption">#{{::tag.tag_text }}</a><!-- (21-03-18)  tag text related changes-->
+
+
+							 <!-- <a href="/tag/{{::tag.tag_name}}">#{{::tag.tag_name}}</a> -->
+							 <a href="/questions/{{::tag.tag_name}}" class="questionButtn" ng-if=":: tag.question_tag==post.caption" >{{tag.tagCount=='0'|| !tag.tagCount ?'No answer yet': tag.tagCount=='1'? '1 answer': tag.tagCount+' answers' }}</a>
+							 
+							
+						</li>
+					</ul>
+
+					<ul ng-if="::post.post_type!='6'">
+						<li ng-repeat="tag in ::post.tags" ng-if="tag.question_tag_created_at ? post.created_at < tag.question_tag_created_at :'true'">
+								 <!-- <a href="/tag/{{::tag.tag_name}}"  >#{{::tag.tag_name | tagreplace}}</a> (21-03-18)tag text related changes-->
+
+								 <a href="/tag/{{::tag.tag_name}}"  >#{{::tag.tag_text }}</a>
+
+						</li>
+					</ul>
+				</div>
+
+				
+				<!-- <span class="noCaptionBx" ng-class="::{'noCaption': post.caption==''}"></span>-->
+				<p class="card-caption" ng-if="::post.caption && (post.post_type != 6 && post.post_type != 5)">
+					<span class="card-caption" ng-bind-html="::post.caption | markupHTMLTags"></span>
+					<a ng-if="::(post.location && post.place_url && post.post_type == 5)" class="cardLoc"
+						href="/place?{{::post.place_url}}">
+						<img src="assets/pages/img/location1.png" alt="Location">
+						<span data-toggle="tooltip" ui-jq="tooltip" data-original-title="{{::post.location}}">{{ ::showLocation(post.location) }}</span>
+					</a>
+				</p>
+				<div class="userStatusRow smUserStatus" ng-class="::{'noBio': post.user.about_me=='' || post.user.about_me==null}">
+					<!-- <div class="userStatusImage" ng-if="::post.user.thumb_image_url"> -->
+					<div class="userStatusImage" ng-if="::post.user.thumb_image_url && post.ask_anonymous!=1 ">       <!---  change for add ask_anonymous condition   -->
+						<a href="/profile/{{::post.user.username}}" style="background:url({{::post.user.thumb_image_url}}) no-repeat;"></a>
+					</div>
+
+					<!-- <div ng-if="::(!post.user.thumb_image_url)" class="userStatusImage {{::post.user.user_color}}"> -->
+					<div ng-if="::(!post.user.thumb_image_url) && post.ask_anonymous!=1 " class="userStatusImage {{::post.user.user_color}}">   <!---  change for add ask_anonymous condition   -->
+						<a href="/profile/{{::post.user.username}}">
+							<span class="txt">{{::post.user.first_name.charAt(0)}}</span>
+						</a>
+					</div>
+					<!-- Add this for anonymous post start -->
+					<div ng-if=":: post.ask_anonymous==1 " class="userStatusImage {{::post.user.user_color}}">
+						<a href="">
+								<span class="txt">A</span>
+						</a>
+					</div>
+					<!-- Add this for anonymous post end-->
+
+					<div class="userStatusInfo withLocation" ng-class="{'showFollow':userFollowing.indexOf(post.user.id)==-1 && post.user.id!=user.id}">
+						<span class="userStatusInfoTtl clearfix withLocation">
+							<!-- <a href="/profile/{{::post.user.username}}" >{{::(post.user.first_name
+								+ ' ' + post.user.last_name)}}</a> -->
+
+							<a href="/profile/{{::post.user.username}}" ng-if=":: post.ask_anonymous!=1 ">{{::(post.user.first_name
+								+ ' ' + post.user.last_name)}}</a> <!---  change for add ask_anonymous condition   -->
+
+							<!-- Add this for anonymous post start -->
+							<a href="" ng-if=":: post.ask_anonymous==1 ">Anonymous</a>   
+							<!-- Add this for anonymous post end--> 
+							<div ng-if="::(post.ask_anonymous==0)">    
+								<label class="followBtn" ng-if="::(post.user.id!=user.id && user.guest==0)"
+									allfollowuser="followUser(post.user.id,'C','followed');">
+									<span class="" ng-if="userFollowing.indexOf(post.user.id)==-1">FOLLOW</span>
+									<span class="ico" ng-if="userFollowing.indexOf(post.user.id)!=-1">FOLLOWING</span>
+								</label>
+								
+								<label class="followBtn" ng-if="::(post.user.id!=user.id && user.guest!= 0)" ng-click="redirecToLogin();">
+									<span class="" ng-if="userFollowing.indexOf(post.user.id)==-1">FOLLOW</span>
+									<span class="ico" ng-if="userFollowing.indexOf(post.user.id)!=-1">FOLLOWING</span>
+								</label>
+							</div>
+						  <span class="postCardOnlineusr" ng-if="post.people_here">
+								<i class="fa fa-circle"></i> {{post.people_here}}
+							</span>
+						</span>
+						<div class="cardFollow clearfix">
+							<small ng-if="::showElapsedTime(post.created_at)"><!--Shared this post -->
+								<time am-time-ago="post.created_at | amUtc | amLocal"></time>
+							</small>
+							<small ng-if="::(!showElapsedTime(post.created_at))"><!--Shared this post  -->
+								<time>{{ ::(post.created_at | amDateFormat:'DD MMM YYYY') }}</time>
+							</small>
+							{{ ::typeof(post.distance) }}
+							<small class="showNearby"
+								   ng-init="post.distance =  (currentPage !== 'nearby' && currentPage !== 'place' && post.distance > 100) ? null : post.distance" ng-if="post.hasOwnProperty('distance') && post.distance!=null"
+							>
+								 - {{::(post.distance | formatDistance)}} away
+							</small>
+						</div>
+						<div class="userStatusInfo info" ng-if="::post.user.about_me && post.ask_anonymous!=1  ">
+							<p class="userAbout">
+								<span class="clearfix" data-toggle="tooltip" ui-jq="tooltip"
+									  data-original-title="{{::post.user.about_me }}">
+									<small>{{::post.user.about_me }}</small>
+								</span>
+							</p>
+						</div>
+					</div>
+					<div class="clearfix"></div>
+				</div>
+			</div>
+
+			<div ng-if="::(user.guest== 0)">
+			<div class="profileCommentFooter addNew noBorderPos">
+				<div class="left">
+					<div class="cardSmNav last">
+						<span class="countN" 
+							ng-if="post.totalPostViews && (post.post_type==1 ||post.post_type==5 )">
+							{{ ::(post.totalPostViews | thousandSuffix) }}
+							&nbsp;{{showPostViewTxt(post, 'card')}}
+						</span>
+						<span class="countN" 
+							ng-if="post.totalPostViews && !(post.post_type==1 ||post.post_type==5)">
+							{{ post.totalPostViews | thousandSuffix }}
+							&nbsp;{{showPostViewTxt(post, 'card')}}
+						</span>
+					</div>
+				</div>
+				<div class="left centr" ng-class="::{'show2': popUpReportDropdrow==1}">
+					<a class="upvoteIcon"
+					   data-toggle="tooltip"
+					   ui-jq="tooltip"
+					   data-original-title="{{post.isUpvote == 'Y' ? 'Remove Upvote' : 'Upvote' }}"
+					   upvotes="doUpvotes(post.id,post.child_post_id,'C');">
+						<img src="/assets/pages/img/arrow2_t.png" alt="downvote"
+							 ng-if="post.isUpvote == 'N'"/>
+						<img src="/assets/pages/img/arrow2_t_sl.png" alt="upvote"
+							 ng-if="post.isUpvote == 'Y'"/>
+						
+					</a>
+					<span class="countN"
+						  ng-if="post.upvotes - post.downvotes !=0">
+						{{ (post.upvotes - post.downvotes) >0 ? (post.upvotes - post.downvotes) : (post.upvotes - post.downvotes) | thousandSuffix }}</span>
+					<a class="tip"
+					   data-toggle="tooltip"
+					   ui-jq="tooltip"
+					   data-original-title="Comment"
+					   ng-if="::(post.allow_comment==1)"
+					   ng-click="showPostDetails(post.id,post.child_post_id,1,$index)">
+						<img src="/assets/pages/img/speech_bubble4.png" alt="comment-count"/>
+					</a>
+					<span class="countN" ng-if="post.allow_comment && post.totalComments>0"> {{ post.totalComments  | thousandSuffix }}</span>
+					<div class="cardSmNav" <?php /*ng-if="post.post_type != 5"*/ ?>>
+						<a class="shrClk" ng-if="::(post.allow_share==1)"
+						   data-toggle="tooltip" ui-jq="tooltip"
+						   data-original-title="Share"
+						   ng-click="openSharePostPopUp(post.id);">
+							<img src="/assets/pages/img/refresh4.png" alt="share"/>
+						</a>
+						<span class="countN" ng-if="post.allow_share==1 && post.totalShare>0"> {{post.totalShare | thousandSuffix}}</span>
+						<div id="shareOverlay_{{post.id}}" 
+							ng-if="::(post.allow_share==1)"
+							ng-click="closeOverLayout()"
+							class="subOverlay"
+							style="display:none;"></div>
+						
+						<div id="shareDropdrow_{{::post.id}}" class="sub" style="display:none;">
+							<ul>
+								<li ng-if="::(post.child_post_user_id!=user.id)"
+									share="sharePopUp(post.id,post.child_post_user_id,post.child_post_id,0);">
+									<img src="/assets/pages/img/refresh4.png" alt="share post"/>
+									Share this post
+								</li>
+								<li social-sharing="facebook(post,'C');">
+									<img src="/assets/pages/img/fb-icon.png"
+										 alt="share to facebook"/> Share to facebook
+								</li>
+								<li social-sharing="twitter(post,'C');">
+									<img src="/assets/pages/img/twt-icon.png"
+										 alt="share to twitter"/> Share to twitter
+								</li>
+							</ul>
+						</div>
+					</div>
+					<a class="tip saveDel"
+					   data-toggle="tooltip"
+					   ui-jq="tooltip"
+					   data-original-title="Save"
+					   ng-if="::(post.created_by!=user.id && post.child_post_user_id!=user.id)"
+					   book-mark="bookMarkProcess(post.id,'C');">
+						<img src="/assets/pages/img/bookmark.png"
+							 alt="saved post"
+							 ng-if="post.isBookMark=='N'"
+							 class="saveIcon"/>
+						<img src="/assets/pages/img/bookmark-fill.png"
+							 alt="remove saved post"
+							 ng-if="post.isBookMark=='Y'"
+							 class="savedIcon"/>
+					</a>
+				</div>
+				<div class="right">
+					<div class="cardSmNav last" id="cardDotPop-{{::post.id}}" onclick="reportTop(this.id)">
+						<a class="moreBtnN" ng-click="report(post);">
+							<i class="fa fa-circle" aria-hidden="true"></i>
+							<i class="fa fa-circle" aria-hidden="true"></i>
+							<i class="fa fa-circle" aria-hidden="true"></i>
+						</a>
+						<post-card-menu></post-card-menu>
+					</div>
+				</div>
+				<div class="clearfix"></div>
+			</div>
+			</div>
+
+			<div class="profileCommentFooter addNew noBorderPos" ng-if="::(user.guest!= 0)">
+				<div class="left">
+					<div class="cardSmNav last">
+						<span class="countN"
+							ng-if="post.totalPostViews && (post.post_type==1 ||post.post_type==5)">
+							{{::(post.totalPostViews | thousandSuffix)}}
+							&nbsp;{{showPostViewTxt(post, 'card')}}
+						</span>
+						<span class="countN"
+							ng-if="post.totalPostViews && !(post.post_type==1 ||post.post_type==5)">
+							{{post.totalPostViews | thousandSuffix}}
+							&nbsp;{{showPostViewTxt(post, 'card')}}
+						</span>
+					</div>
+				</div>
+				<div class="left centr">
+					<a class="upvoteIcon" ng-click="redirecToLogin()">
+						<img src="/assets/pages/img/arrow2_t.png" alt="upvote icon"
+							/>
+					</a>
+					<span class="countN"
+						  ng-if="post.upvotes-post.downvotes!=0">
+						{{ (post.upvotes - post.downvotes) >0 ? (post.upvotes - post.downvotes) : (post.upvotes - post.downvotes) | thousandSuffix }}</span>
+					<a class="tip" ng-click="redirecToLogin()">
+						<img src="/assets/pages/img/speech_bubble4.png" alt="comment"/>
+					</a>
+					<span class="countN" ng-if="post.totalComments !=0"> {{ post.totalComments  | thousandSuffix }}</span>
+					
+					<div class="cardSmNav">
+						<a class="shrClk" ng-if="::(post.allow_share==1)"
+						   data-toggle="tooltip" ui-jq="tooltip"
+						   data-original-title="Share"
+						   ng-click="openSharePostPopUp(post.id);">
+							<img src="/assets/pages/img/refresh4.png" alt="Share"/>
+						</a>
+						<span class="countN" ng-if="post.totalShare !=0"> {{ post.totalShare | thousandSuffix }}</span>
+						<div id="shareOverlay_{{post.id}}" 
+							ng-if="::(post.allow_share==1)"
+							ng-click="closeOverLayout()"
+							class="subOverlay"
+							style="display:none;"></div>
+						
+						<div id="shareDropdrow_{{::post.id}}" class="sub" style="display:none;">
+							<ul>   
+								<li social-sharing="facebook(post,'C');">
+									<img src="/assets/pages/img/fb-icon.png"
+										 alt="share to facebook"/> Share to facebook
+								</li>
+								<li social-sharing="twitter(post,'C');">
+									<img src="/assets/pages/img/twt-icon.png"
+										 alt="share to twitter"/> Share to twitter
+								</li>
+							</ul>
+						</div>
+					</div>
+					<a class="tip" ng-click="redirecToLogin()">
+						<img src="/assets/pages/img/bookmark.png" alt="saveIcon" class="saveIcon"/>
+					</a>
+				</div>
+				<div class="right">
+					<div class="cardSmNav last">
+						<a class="moreBtnN" ng-click="redirecToLogin()">
+							<i class="fa fa-circle" aria-hidden="true"></i>
+							<i class="fa fa-circle" aria-hidden="true"></i>
+							<i class="fa fa-circle" aria-hidden="true"></i>
+						</a>
+					</div>
+				</div>
+				<div class="clearfix"></div>
+			</div>
+		</div>
+    </div>
+</div>

@@ -1,0 +1,29 @@
+<h1>Hello></h1>
+<div class="row postRow">
+    <div class="col-md-12 col-lg-12">
+        <div class="post_card_container">
+            <div class="blockContentRow inline"
+                    id="blckCntParent"
+                    infinite-scroll="fetchPostData()"
+                    infinite-scroll-disabled="busy"
+                    infinite-scroll-distance="2"
+                    masonry
+                    preserve-order
+                    <?php /*item-selector=".blockContent"*/?>
+                    reload-on-resize
+                    column-width="350"
+                    masonry-options="{ transitionDuration: 0 }"
+                    ng-cloak>
+                    <div class="blockContent masonry-brick" ng-repeat="post in commonData.allPosts">
+                        <post-card></post-card>
+						<any ng-if="post.post_type==1 || post.post_type==5" 
+                    in-view="lineInView($index, $inview, $inviewInfo,post)"></any>
+                    </div>
+                <?php /*<div class="blockContent" ng-if="allPosts.length === 0">
+                </div> */?>
+            </div>
+            <h2 class="noPostAvailable" ng-if="noPostForTag"> No {{ post_type }} post.</h2>
+            <h2 class="noPostAvailable" ng-if="!noPostForTag && noMorePost"> No more {{ post_type }} post.</h2>
+        </div>
+    </div>
+</div>

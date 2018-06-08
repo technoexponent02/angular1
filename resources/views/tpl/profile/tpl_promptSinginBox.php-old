@@ -1,0 +1,396 @@
+<!-- <div class="modal fade" id="signInNotifi" role="dialog">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content-wrapper">
+            <div class="modal-content">
+                <div class="modal-header clearfix text-left">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="pg-close fs-14"></i>
+                    </button>
+                  
+                </div>
+                <div class="modal-body">
+					<h2>You are required to sign in to access this.</h2>
+                    <p>Please click Sign In button or wait a moment</p>
+					<div class="modalBtns align-center">
+						<a ng-click="goToLogin();" class="btn btn-primary btn-sm no-margin inline signIN">Sign In</a>
+						<button type="button" class="btn btn-danger btn-sm no-margin inline" data-dismiss="modal">Cancel</button>
+					</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> -->
+
+
+<div class="modal sign aaa" id="signInNotifi" role="dialog">
+
+	<style>
+	.modal.sign.fade {
+		background-color: transparent;
+	}
+	.loginDropWrap,
+	.forgotPassWrap{
+		width: 386px;
+		position: fixed;
+		top: 60px;
+		right: 37px;
+		background: #fff;
+		box-shadow: 0 0 8px 0 rgba(0,0,0,.7);
+		border: aliceblue;
+		text-shadow: none;
+		border-radius: 3px;
+		font-size: 13px;
+		margin: 0;
+		min-width: 50px;
+		z-index: 700!important;
+		padding: 0 15px 15px;
+	}
+	#form-signin .explorecheck p,
+	#form-forgot .explorecheck p{
+		float: left;
+		display: block;
+	}
+	#form-signin .explorecheck p.newToSwolk,
+	#form-forgot .explorecheck p.newToSwolk{
+		float: right;
+		display: block;
+	}
+	.loginDropWrap #signInNotifi .nwChk:after,
+	.loginDropWrap #signInNotifi .nwChk:before,
+	.forgotPassWrap #signInNotifi .nwChk:after,
+	.forgotPassWrap #signInNotifi .nwChk:before{
+		content:'';
+		display: block;
+		clear: both;
+	}
+	#form-signin .explorecheck a, 
+	#form-signin .explorecheck p, 
+	#form-signin .explorecheck p a,
+	#form-forgot .explorecheck a, 
+	#form-forgot .explorecheck p, 
+	#form-forgot .explorecheck p a{
+		font-weight: 500;
+		font-size: 13px;
+	}
+	.loginDropWrap .btn-facebook, 
+	.loginDropWrap .btn-twitter {
+		color: #fff!important;
+		background-color: #3b5998!important;
+		border: none!important;
+		font-size: 14px!important;
+		line-height: 30px!important;
+		height: auto!important;
+		padding: 4px 16px!important;
+		border-radius: 3px!important;
+	}
+	.loginDropWrap .btn-twitter {
+		background-color: #2ba9e1!important;
+		border: none!important;
+	}
+	.loginDropWrap .btn-facebook:hover{
+		color: #fff!important;
+		background-color: #30487b!important;
+		border-color: rgba(0,0,0,.2)!important;
+	}
+	.loginDropWrap .btn-twitter:hover{
+		color: #fff!important;
+		background-color: #1c92c7!important;
+		border-color: rgba(0,0,0,.2)!important;
+	}
+	.loginDropWrap .btn-social .pull-left{
+		top: 1px;
+	}
+
+	.loginDropWrap:after, 
+	.loginDropWrap:before,
+	.forgotPassWrap:after, 
+	.forgotPassWrap:before {
+		bottom: 100%;
+		left: 90%;
+		border: solid transparent;
+		content: " ";
+		height: 0;
+		width: 0;
+		position: absolute;
+		pointer-events: none;
+	}
+	.loginDropWrap:after,
+	.forgotPassWrap:after {
+		border-color: rgba(255, 255, 255, 0);
+		border-bottom-color: #fff;
+		border-width: 7px;
+		margin-left: -7px;
+	}
+	.loginDropWrap:before,
+	.forgotPassWrap:before {
+		border-color: rgba(194, 194, 194, 0);
+		border-bottom-color: #c2c2c2;
+		border-width: 8px;
+		margin-left: -8px;
+	}
+
+
+    #form-signin .signin-error {
+        background: #f53a3a;
+        color: #fff;
+        padding: 10px;
+        border-radius: 4px;
+        margin-bottom: 10px;
+        word-wrap: break-word;
+    }
+
+    #form-forgot .forgotPass-error {
+        background: #f53a3a;
+        color: #fff;
+        padding: 10px;
+        border-radius: 4px;
+        margin-bottom: 10px;
+        word-wrap: break-word;
+    }
+
+    #form-forgot .forgotPass-success {
+        background: #37AB2B;
+        color: #fff;
+        padding: 10px;
+        border-radius: 4px;
+        margin-bottom: 10px;
+        word-wrap: break-word;
+    }
+
+	@media screen and (max-width: 1001px) {
+		.loginDropWrap,
+		.forgotPassWrap{
+			right: 20px;
+		}
+	}
+	@media screen and (max-width: 991px) {
+		.loginDropWrap,
+		.forgotPassWrap{
+			right: 10px;
+		}
+	}
+	@media screen and (max-width: 500px) {
+		.loginDropWrap,
+		.forgotPassWrap{
+			width: 100%;
+			right: 0;
+		}
+	}
+	@media screen and (max-width: 320px) {
+		.loginDropWrap:after, 
+		.loginDropWrap:before,
+		.forgotPassWrap:after, 
+		.forgotPassWrap:before{
+			left: 84%;
+		}
+	}
+
+	</style>
+
+    <!-- login form -->
+		
+    <!-- <div class="loginDropWrap">
+        <form class="p-t-15" action="<?php echo url('login') ?>" role="form" method="POST" id="form-signin">
+		
+            <div class=" validate">
+                <div class="form-group form-group-default <?php echo  $errors->has('email') ? ' has-error' : '' ?>">
+                    <label>USERNAME / E-MAIL </label>
+                    <div class="controls">
+                        <input type="text" name="email" placeholder="Username / E-mail" class="form-control" value="">
+                    </div>
+                </div>
+            </div>
+            <div class="">
+                <div class="form-group form-group-default <?php echo  $errors->has('password') ? ' has-error' : '' ?> ">
+                    <label>Password</label>
+                    <div class="controls">
+                        <input type="password" class="form-control" name="password" placeholder="Password">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="checkbox nwChk explorecheck">
+                        <p><a href="javascript:void(0);" onClick="forgotcome();" id="backtoforgot">Forgot Password?</a></p>
+						<p class="newToSwolk">New to Swolk ? <a href="" onClick="location.href='<?php echo url('signup') ?>'" class="signupScroll">Sign Up here</a></p>
+                        <div class="spacer"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <button class="btn btn-primary btnLoading btn-cons m-t-10  btn-loading" type="submit" name="btnSubmit" value="submit" style="margin-bottom:10px !important;">Sign in</button>
+                </div>
+            </div>
+
+            <div class="row m-t-10">
+                <div class="col-md-12">
+                    <a class="btn btn-block btn-social btn-facebook" onClick="location.href='<?php echo url('auth/facebook/bG9naW5fcmVnaXN0ZXI=') ?>'" >
+                        <span class="pull-left"><i class="fa fa-facebook"></i></span>
+                        <span class="bold">Log in with Facebook</span>
+                    </a>
+                </div>
+                <div class="col-md-12">
+                    <a class="btn btn-block  btn-social btn-twitter" onClick="location.href='<?php echo url('auth/twitter/b25seV9sb2dpbg===') ?>'" >
+                        <span class="pull-left"><i class="fa fa-twitter"></i></span>
+                        <span class="bold">Log in with Twitter</span>
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="forgotPassWrap" style="display:none;">
+        <form class="p-t-15"role="form" method="POST" id="form-forgot" action="<?php echo url('password/forgot') ?>">
+            <div class="validate">
+                <div class="form-group form-group-default">
+                    <label>E-MAIL </label>
+                    <div class="controls">
+                        <input type="email" name="email" placeholder="E-mail" class="form-control" value="">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="checkbox nwChk explorecheck">
+                        <p><a href="javascript:void(0);" onClick="signInCome()" id="back-signin">Signin</a></p>
+                        <div class="spacer"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <button class="btn btn-primary btnLoading btn-cons m-t-10  btn-loading" type="submit" name="btnSubmit" value="submit" style="margin-bottom:10px !important;">Submit</button>
+                </div>
+            </div>
+
+        </form>
+    </div> -->
+
+
+
+
+	<!-- via http call -->
+	<div class="loginDropWrap" ng-controller="SignInCtrl">
+
+        <!-- <form class="p-t-15" action="<?php echo url('login') ?>" method="POST" role="form" id="form-signin" ng-submit="loginPopSubmit()"> -->
+        <form class="p-t-15" role="form" id="form-signin" ng-submit="loginPopSubmit()">
+
+			<!-- <pre>{{loginPopUpUserData | json}}</pre>
+            <pre>{{popupsigninH | json}}</pre> -->
+
+            <!-- <div id="signsuccessbox">
+                {{signinsuccess}}
+            </div> -->
+
+            <div id="signerrorbox" ng-class="signinerrormsgST==true ? 'signin-error' : ''">
+                {{signinerrormsg}}
+            </div>
+
+
+            <div class=" validate">
+                <div class="form-group form-group-default">
+                    <label>USERNAME / E-MAIL </label>
+                    <div class="controls">
+                        <input type="text" name="email" placeholder="Username / E-mail" class="form-control" ng-model="popupsigninH.email">
+                    </div>
+                </div>
+            </div>
+            <div class="">
+                <div class="form-group form-group-default">
+                    <label>Password</label>
+                    <div class="controls">
+                        <input type="password" class="form-control" name="password" placeholder="Password" ng-model="popupsigninH.password">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="checkbox nwChk explorecheck">
+                        <p><a href="javascript:void(0);" onClick="forgotcome();" id="backtoforgot">Forgot Password?</a></p>
+						<p class="newToSwolk">New to Swolk ? <a href="" onClick="location.href='<?php echo url('signup') ?>'" class="signupScroll">Sign Up here</a></p>
+                        <div class="spacer"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <button class="btn btn-primary btnLoading btn-cons m-t-10" id="signSubmit" type="submit" name="btnSubmit" value="submit" style="margin-bottom:10px !important;">Sign in</button>
+                </div>
+            </div>
+
+            <div class="row m-t-10">
+                <div class="col-md-12">
+                    <a class="btn btn-block btn-social btn-facebook" onClick="location.href='<?php echo url('auth/facebook/bG9naW5fcmVnaXN0ZXI=') ?>'" >
+                        <span class="pull-left"><i class="fa fa-facebook"></i></span>
+                        <span class="bold">Log in with Facebook</span>
+                    </a>
+                </div>
+                <div class="col-md-12">
+                    <a class="btn btn-block  btn-social btn-twitter" onClick="location.href='<?php echo url('auth/twitter/b25seV9sb2dpbg===') ?>'" >
+                        <span class="pull-left"><i class="fa fa-twitter"></i></span>
+                        <span class="bold">Log in with Twitter</span>
+                    </a>
+                </div>
+            </div>
+        </form>
+
+
+        <form class="p-t-15" action="<?php echo url('login') ?>" method="POST" role="form" id="form-signin-h" style="display:none;">
+            <input type="text" id="signin-email" name="email" placeholder="Username / E-mail" class="form-control" ng-model="popupsigninH.email">
+            <input type="password" id="signin-pass" class="form-control" name="password" placeholder="Password" ng-model="popupsigninH.password">
+        </form>
+
+
+    </div>
+
+
+ <div class="forgotPassWrap" ng-controller="ForgotPasswordCtrl" style="display:none;">
+    <div class="forgotPassWrap" style="">
+
+        <form class="p-t-15"role="form" method="POST" id="form-forgot"  ng-submit="forgotPopupSubmit()">
+            <!-- <pre>{{ forgotpasserrormsgST |json }}</pre> -->
+            <div id="" ng-class="forgotpasserrormsgST==true ? 'forgotPass-error' :'' ">
+                {{forgotpasserrormsg}}
+            </div>
+            <div id="" ng-class="forgotpasssuccmsgST==true ? 'forgotPass-success' :'' ">
+                {{forgotpasssuccmsg}}
+            </div>    
+
+
+            <div class="validate">
+                <div class="form-group form-group-default">
+                    <label>E-MAIL </label>
+                    <div class="controls">
+                        <input type="email" name="email" placeholder="E-mail" class="form-control" value="" ng-model="forgotEmail" >
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="checkbox nwChk explorecheck">
+                        <p><a href="javascript:void(0);" onClick="signInCome()" id="back-signin">Signin</a></p>
+                        <div class="spacer"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <button class="btn btn-primary btnLoading btn-cons m-t-10  btn-loading" type="submit" name="btnSubmit" value="submit" style="margin-bottom:10px !important;" id="forgotPassSubmit">Submit</button>
+                </div>
+            </div>
+
+        </form>
+		
+    </div>
+</div>    
+	<!-- via http call -->
+
+</div>

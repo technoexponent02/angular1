@@ -1,0 +1,8 @@
+<div class="channelRow inline"
+	infinite-scroll="fetchTopChannel()"
+    infinite-scroll-disabled="busy"
+    infinite-scroll-distance="1">
+    <channel-card ng-repeat="channel in channelUsers"></channel-card>
+</div>
+<h2 class="noPostAvailable" ng-if="noChannelForTag"> No {{ post_type  == 'top_channel' ? 'Top Channel' : post_type }} post.</h2>
+<h2 class="noPostAvailable" ng-if="noMoreChannel"> No more {{ post_type  == 'top_channel' ? 'Top Channel' : post_type }} post.</h2>
